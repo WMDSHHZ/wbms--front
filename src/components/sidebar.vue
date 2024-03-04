@@ -36,9 +36,27 @@ const items = [
     },
     {
         icon: 'DocumentCopy',
-        index: '/tabs',
-        title: 'tab选项卡',
+        index: '/logs',
+        title: '日志管理',
         permiss: '3',
+    },
+    {
+        icon: 'DocumentCopy',
+        index: '/record',
+        title: '刷新纪录',
+        permiss: '2',
+    },
+    {
+        icon: 'Setting',
+        index: '/settings',
+        title: '系统设置',
+        permiss: '2',
+    },
+    {
+        icon: 'CoffeeCup',
+        index: '/about',
+        title: '关于我们',
+        permiss: '2',
     }
 ];
 

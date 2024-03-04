@@ -51,13 +51,13 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "form" */ '../views/form.vue'),
             },
             {
-                path: '/tabs',
-                name: 'tabs',
+                path: '/logs',
+                name: 'logs',
                 meta: {
-                    title: 'tab标签',
+                    title: '日志管理',
                     permiss: '3',
                 },
-                component: () => import(/* webpackChunkName: "tabs" */ '../views/tabs.vue'),
+                component: () => import(/* webpackChunkName: "logs" */ '../views/logs.vue'),
             },
             {
                 path: '/donate',
@@ -139,6 +139,33 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import(/* webpackChunkName: "import" */ '../views/import.vue'),
             },
+            {
+                path: '/record',
+                name: 'record',
+                meta: {
+                    title: '刷新纪录',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "record" */ '../views/record.vue'),
+            },
+            {
+                path: '/settings',
+                name: 'settings',
+                meta: {
+                    title: '系统设置',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "settings" */ '../views/settings.vue'),
+            },
+            {
+                path: '/about',
+                name: 'v',
+                meta: {
+                    title: '关于我们',
+                    permiss: '2',
+                },
+                component: () => import(/* webpackChunkName: "about" */ '../views/about.vue'),
+            }
         ],
     },
     {

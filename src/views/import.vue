@@ -15,12 +15,8 @@
                 <el-link href="/template.xlsx" target="_blank">下载模板</el-link>
             </div>
             <el-table :data="tableData" border class="table" header-cell-class-name="table-header">
-                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                <el-table-column prop="name" label="姓名"></el-table-column>
-                <el-table-column prop="sno" label="学号"></el-table-column>
-                <el-table-column prop="class" label="班级"></el-table-column>
-                <el-table-column prop="age" label="年龄"></el-table-column>
-                <el-table-column prop="sex" label="性别"></el-table-column>
+                <el-table-column prop="number" label="序号" width="60px" align="center"></el-table-column>
+                <el-table-column prop="MAC" label="MAC地址"></el-table-column>
             </el-table>
         </div>
     </div>
@@ -28,37 +24,26 @@
 
 <script setup lang="ts" name="import">
 import { UploadProps } from 'element-plus';
-import { ref, reactive } from 'vue';
+import { ref } from 'vue';
 import * as XLSX from 'xlsx';
 
 interface TableItem {
-    id: number;
-    name: string;
-    sno: string;
-    class: string;
-    age: string;
-    sex: string;
+    number: number,
+    MAC: string
 }
 
+const maxNumber = 12;   //最多12个mac地址
 const tableData = ref<TableItem[]>([]);
 // 获取表格数据
 const getData = () => {
     tableData.value = [
         {
-            id: 1,
-            name: '小明',
-            sno: 'S001',
-            class: '一班',
-            age: '10',
-            sex: '男',
+            number: 1,
+            MAC: '100-249-192-0-0-24-253-114',
         },
         {
-            id: 2,
-            name: '小红',
-            sno: 'S002',
-            class: '一班',
-            age: '9',
-            sex: '女',
+            number: 2,
+            MAC: '100-249-192-0-0-24-253-114',
         },
     ];
 };
