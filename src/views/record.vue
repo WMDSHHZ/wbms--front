@@ -4,6 +4,7 @@
 			<span width="100px" style="margin-right: 50px;">失败个数: 12{{ successNum }}</span>
 			<span width="100px">成功个数: 0{{ failNum }}</span>
 		</div>
+		<el-button @click="getNewRecord">获取最新记录</el-button>
 		<el-table :data="recordData" border class="table" style="width: 100%" >
 			<el-table-column prop="id" label="托号"></el-table-column>
 			<el-table-column prop="voltage" label="电压"></el-table-column>
@@ -19,6 +20,8 @@
 
 <script setup lang="ts" name="tabs">
 import { ref, reactive } from 'vue';
+import $ from 'jquery';
+import axios from 'axios';
 
 interface TableItem {
 	id: number,
@@ -152,6 +155,11 @@ const getNum = () => {
 		else
 			failNum++;
 	}
+}
+
+const getNewRecord = () => {
+	axios.get('/battery/file_status')
+		.catch()
 }
 
 getRecord();

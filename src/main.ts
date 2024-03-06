@@ -6,10 +6,20 @@ import router from './router';
 import { usePermissStore } from './store/permiss';
 import 'element-plus/dist/index.css';
 import './assets/css/icon.css';
+import axios from "axios";
 
 const app = createApp(App);
 app.use(createPinia());
 app.use(router);
+axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
+app.config.globalProperties.$axios = axios;
+app.config.globalProperties.$target = "http://localhost:5000";
+app.config.globalProperties.$config = {
+  headers: {
+    "Content-Type": "application/json;charset=utf-8",
+  },
+};
 
 // 注册elementplus图标
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
