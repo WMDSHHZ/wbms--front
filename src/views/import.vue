@@ -16,8 +16,8 @@
                 <el-button type="primary" @click="uploadData">上传数据</el-button>
                 <el-button type="danger" @click="deleteData">清空数据</el-button>
             </div>
-            <el-table :data="tableData" border class="table" header-cell-class-name="table-header">
-                <el-table-column prop="number" label="序号" width="60px" align="center"></el-table-column>
+            <el-table :data="tableData" border class="table" header-cell-class-name="table-header" show-overflow-tooltip="true">
+                <el-table-column prop="number" label="托号" width="60px" align="center"></el-table-column>
                 <el-table-column prop="MAC" label="MAC地址"></el-table-column>
             </el-table>
             
@@ -33,11 +33,14 @@ import * as XLSX from 'xlsx';
 
 interface TableItem {
     number: number,
-    MAC: string
+    MAC: string,
+    PN: string,
+    "模组号": string,
+    traceCode: string
 }
 
-const maxNumber = 12;   //最多12个mac地址
 var tableData = ref<TableItem[]>([]);
+var tempTableData = ref<TableItem[]>([]);
 
 var importList = ref<any>([]);
 const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
@@ -89,22 +92,22 @@ const uploadData = () => {
 }
 
 const handleMany = async () => {
-    // 把数据传给服务器后获取最新列表，这里只是示例，不做请求
     const list = importList.value.map((item: any, index: number) => {
         return {
-            number: index,
-            MAC: item['MAC地址']
+            number: item['套号'],
+            MAC: item['MAC'],
+            PN: item['PN'],
+            "模组号": item['模组号'],
+            traceCode: item['Trace code']
         };
     });
-    if(tableData.value.length + list.length > 12){
-        ElMessage({
-            message: '上传失败,mac地址最多导入12个',
-            type: 'error',
-        })
-    }else{
-        tableData.value.push(...list)
+    tableData.value.push(...list)  
+    if(list.length > 50){
+        for(let i=0;i<50;i++){
+            tempTableData.value[i] = list[i]
+        }
     }
-    
+      
 };
 
 const deleteData = () => {

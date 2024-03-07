@@ -1,6 +1,9 @@
 <template>
     <div class="container">
-        <div class="content-title">支持拖拽</div>
+        <div class="content-title">上传刷新软件包</div>
+        <el-menu>
+
+        </el-menu>
         <el-main direction="vertical">
             <div class="upload-main-area-1">
                 <div class="upload-sub-area">
@@ -20,6 +23,7 @@
                         </div>
                     </el-upload>
                     <el-text class="upload-name">FPA文件上传</el-text>
+                    <el-input placeholder="请填写回读信息,例2.0.8.14"></el-input>
                 </div>
 
                 <div class="upload-sub-area">
@@ -38,6 +42,7 @@
                         </div>
                     </el-upload>
                     <el-text class="upload-name">OPFW文件上传</el-text>
+                    <el-input placeholder="请填写回读信息,例2.0.8.14"></el-input>
                 </div>
 
                 <div class="upload-sub-area">
@@ -56,6 +61,7 @@
                         </div>
                     </el-upload>
                     <el-text class="upload-name">BMS Container文件上传</el-text>
+                    <el-input placeholder="请填写回读信息，例1027640944"></el-input>
                 </div>
             </div>
 
@@ -77,6 +83,7 @@
                         </div>
                     </el-upload>
                     <el-text class="upload-name">PMS Container文件上传</el-text>
+                    <el-input placeholder="请填写回读信息，例1027640944"></el-input>
                 </div>
 
                 <div class="upload-sub-area">
@@ -96,6 +103,7 @@
                         </div>
                     </el-upload>
                     <el-text class="upload-name">EMS Container文件上传</el-text>
+                    <el-input placeholder="请填写回读信息，例1027640944"></el-input>
                 </div>
 
                 <div class="upload-sub-area" style="visibility: hidden;">
@@ -116,7 +124,9 @@
                 </div>
             </div>
 
-
+            <el-button>
+                下一步
+            </el-button>
         </el-main>
         
     </div>

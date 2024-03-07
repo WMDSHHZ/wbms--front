@@ -1,7 +1,7 @@
 <template>
     <div class="login-wrap">
         <div class="ms-login">
-            <div class="ms-title">后台管理系统</div>
+            <div class="ms-title">电池刷新管理系统</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
                     <el-input v-model="param.username" placeholder="username">
@@ -68,6 +68,8 @@ const rules: FormRules = {
 };
 const permiss = usePermissStore();
 const login = ref<FormInstance>();
+
+//登录校验
 const submitForm = (formEl: FormInstance | undefined) => {
     if (!formEl) return;
     formEl.validate((valid: boolean) => {
@@ -77,7 +79,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
             const keys = permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
             permiss.handleSet(keys);
             localStorage.setItem('ms_keys', JSON.stringify(keys));
-            router.push('/');
+            router.push('/import');
             if (checked.value) {
                 localStorage.setItem('login-param', JSON.stringify(param));
             } else {

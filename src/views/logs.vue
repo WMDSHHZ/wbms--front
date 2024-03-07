@@ -1,40 +1,72 @@
 <template>
 	<div class="container">
+		<div class="handle-box">
+			<el-table :data="logData" class="table" style="width: 100%" border>
+				<el-table-column prop="message" label="内容"></el-table-column>
+				<el-table-column prop="level" label="错误等级" width="120px"></el-table-column>
+				<el-table-column prop="timestamp" label="日期" width="200px"></el-table-column>
+				<el-table-column width="100px" align="center">
+					<el-button @click="getDeatil">详情</el-button>
+				</el-table-column>
+			</el-table>
 
-		<el-table :data="state.log" :show-header="false" style="width: 100%">
-			<el-table-column>
-				<template #default="scope">
-					<span class="message-title">{{ scope.row.title }}</span>
-				</template>
-			</el-table-column>
-			<el-table-column prop="date" width="180"></el-table-column>
-		</el-table>
+
+		</div>
+
+		<el-dialog v-model="dialogTableVisible">
+			details
+		</el-dialog>
 	</div>
 </template>
 
 <script setup lang="ts" name="tabs">
+import axios from 'axios';
+import { tr } from 'element-plus/es/locale';
 import { ref, reactive } from 'vue';
 
-const state = reactive({
-	log: [
-		{
-			date: '2018-04-19 20:00:00',
-			title: 'BRFM FIRMWARE版本检查：BRFM FIRMWARE版本已刷新为2.0.8.14'
-		},
-		{
-			date: '2018-04-19 21:00:00',
-			title: 'CMU FIRMWARE版本检查：CMU FIRMWARE版本已刷新为2.0.8.22'
-		}
-	]
-});
+interface TableItem {
+    message: string,
+    level: string,
+    timestamp: string,
+}
 
+//var logData = ref<TableItem[]>([]);
+var logData = reactive([]);
+const getLog = () => {
+	axios.get('/log/get')
+		.then(res => {
+			logData.push(...res.data)
+			//logData = res.data
+			console.log(logData)
+		})
+		.catch(e => {
+			console.log(e)
+		})
+}
+
+var dialogTableVisible = ref(false)
+const getDeatil = () => {
+	console.log("111")
+	dialogTableVisible.value = true
+}
+getLog()
 </script>
 
-<style>
+<style scoped>
 .message-title {
 	cursor: pointer;
 }
 .handle-row {
 	margin-top: 30px;
+}
+
+.handle-box {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.table {
+    width: 100%;
+    font-size: 14px;
 }
 </style>

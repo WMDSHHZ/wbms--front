@@ -7,7 +7,7 @@ import 'nprogress/nprogress.css'
 const routes: RouteRecordRaw[] = [
     {
         path: '/',
-        redirect: '/dashboard',
+        redirect: '/login',
     },
     {
         path: '/',
@@ -77,15 +77,6 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "settings" */ '../views/settings.vue'),
             },
             {
-                path: '/about',
-                name: 'about',
-                meta: {
-                    title: '关于我们',
-                    permiss: '2',
-                },
-                component: () => import(/* webpackChunkName: "about" */ '../views/about.vue'),
-            },
-            {
                 path: '/upload',
                 name: 'upload',
                 meta: {
@@ -95,13 +86,13 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "upload" */ '../views/upload.vue'),
             },
             {
-                path: '/info',
-                name: 'info',
+                path: '/approve',
+                name: 'approve',
                 meta: {
                     title: '回读信息确认',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "info" */ '../views/info.vue'),
+                component: () => import(/* webpackChunkName: "approve" */ '../views/approve.vue'),
             }
         ],
     },

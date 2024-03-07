@@ -7,12 +7,12 @@
 		<el-button @click="getNewRecord">获取最新记录</el-button>
 		<el-table :data="recordData" border class="table" style="width: 100%" >
 			<el-table-column prop="id" label="托号"></el-table-column>
-			<el-table-column prop="voltage" label="电压"></el-table-column>
-			<el-table-column prop="temperature" label="温度"></el-table-column>
+			<el-table-column prop="mac" label="MAC地址"></el-table-column>
 			<el-table-column prop="before" label="起始版本"></el-table-column>
 			<el-table-column prop="after" label="刷新后版本"></el-table-column>
 			<el-table-column prop="state" label="刷新状态"></el-table-column>
 			<el-table-column prop="time" label="刷新时间"></el-table-column>
+			<el-table-column prop="info" label="详情"></el-table-column>
 		</el-table>
 
 	</div>
@@ -20,7 +20,6 @@
 
 <script setup lang="ts" name="tabs">
 import { ref, reactive } from 'vue';
-import $ from 'jquery';
 import axios from 'axios';
 
 interface TableItem {
@@ -34,7 +33,7 @@ interface TableItem {
 }
 
 var successNum, failNum;
-
+var status
 const recordData = ref<TableItem[]>([]);
 const getRecord = () => {
 	recordData.value = [

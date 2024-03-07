@@ -1,5 +1,5 @@
 <template>
-  <div>info</div>
+  <div>approve</div>
 </template>
 
 <script>

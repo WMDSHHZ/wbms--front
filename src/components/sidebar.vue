@@ -73,8 +73,8 @@ const items = [
                 permiss: '2',
             },
             {
-                index: '/info',
-                title: '回读信息确认',
+                index: '/approve',
+                title: '审批刷新请求',
                 permiss: '2',
             },
         ],
