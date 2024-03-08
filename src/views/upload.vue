@@ -1,10 +1,19 @@
 <template>
     <div class="container">
         <div class="content-title">上传刷新软件包</div>
-        <el-menu>
 
-        </el-menu>
-        <el-main direction="vertical">
+        <el-table :data="list">
+            <el-table-column label="文件类型"></el-table-column>
+            <el-table-column label="回读信息填写">
+                <el-input></el-input>
+            </el-table-column>
+            <el-table-column label="操作">
+                <el-button type="success"></el-button>
+            </el-table-column>
+        </el-table>
+
+        <!--被隐藏的界面-->
+        <el-main direction="vertical" style="visibility: hidden;">
             <div class="upload-main-area-1">
                 <div class="upload-sub-area">
                     <el-upload
@@ -134,6 +143,37 @@
 
 <script setup lang="ts">
 import axios from 'axios';
+
+const list = [
+    {
+        type: 'CMU FPA文件上传',
+        info: '请填写回读信息,例2.0.8.14'
+    },
+    {
+        type: 'BRFM FPA文件上传',
+        info: '请填写回读信息,例2.0.8.14'
+    },
+    {
+        type: 'CMU OPFW文件上传',
+        info: '请填写回读信息,例2.0.8.14'
+    },
+    {
+        type: 'BRFM OPFW文件上传',
+        info: '请填写回读信息,例2.0.8.14'
+    },
+    {
+        type: 'BMS Container',
+        info: '请填写回读信息,例1027640944'
+    },
+    {
+        type: 'PMS Container',
+        info: '请填写回读信息,例1027640944'
+    },
+    {
+        type: 'EMS Container',
+        info: '请填写回读信息,例1027640944'
+    }
+]
 
 var upload_file
 const headers = {
