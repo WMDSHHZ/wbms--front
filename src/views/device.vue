@@ -1,6 +1,8 @@
 <template>
     <div>
-        device
+        <el-form>
+            
+        </el-form>
     </div>
 </template>
 
