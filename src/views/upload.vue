@@ -1,143 +1,17 @@
 <template>
     <div class="container">
         <div class="content-title">上传刷新软件包</div>
-
         <el-table :data="list">
-            <el-table-column label="文件类型"></el-table-column>
-            <el-table-column label="回读信息填写">
-                <el-input></el-input>
+            <el-table-column prop="type" label="文件类型" width="200px"></el-table-column>
+            <el-table-column prop="info" label="回读信息填写">
+                <template #default="scope">
+                    <el-input :placeholder="getinfo(scope.$index)"></el-input> 
+                </template>
             </el-table-column>
-            <el-table-column label="操作">
-                <el-button type="success"></el-button>
+            <el-table-column label="操作" width="140px">
+                <el-button type="primary" icon="upload" plain>上传文件</el-button>
             </el-table-column>
         </el-table>
-
-        <!--被隐藏的界面-->
-        <el-main direction="vertical" style="visibility: hidden;">
-            <div class="upload-main-area-1">
-                <div class="upload-sub-area">
-                    <el-upload
-                    class="upload-demo"
-                    drag
-                    action="#"
-                    :headers="headers"
-                    :on-change="handle"
-                    :http-request="upload"
-                    :data="{type : 'FPA'}"
-                >
-                        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                        <div class="el-upload__text">
-                            将文件拖到此处，或
-                            <em>点击上传</em>
-                        </div>
-                    </el-upload>
-                    <el-text class="upload-name">FPA文件上传</el-text>
-                    <el-input placeholder="请填写回读信息,例2.0.8.14"></el-input>
-                </div>
-
-                <div class="upload-sub-area">
-                    <el-upload
-                    class="upload-demo"
-                    drag
-                    action="http://jsonplaceholder.typicode.com/api/posts/"
-                    multiple
-                    :on-change="handle"
-                    accept=".otap3"
-                >
-                        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                        <div class="el-upload__text">
-                            将文件拖到此处，或
-                            <em>点击上传</em>
-                        </div>
-                    </el-upload>
-                    <el-text class="upload-name">OPFW文件上传</el-text>
-                    <el-input placeholder="请填写回读信息,例2.0.8.14"></el-input>
-                </div>
-
-                <div class="upload-sub-area">
-                    <el-upload
-                    class="upload-demo"
-                    drag
-                    action="http://jsonplaceholder.typicode.com/api/posts/"
-                    multiple
-                    :on-change="handle"
-                    accept=".bin"
-                >
-                        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                        <div class="el-upload__text">
-                            将文件拖到此处，或
-                            <em>点击上传</em>
-                        </div>
-                    </el-upload>
-                    <el-text class="upload-name">BMS Container文件上传</el-text>
-                    <el-input placeholder="请填写回读信息，例1027640944"></el-input>
-                </div>
-            </div>
-
-
-            <div class="upload-main-area-2">
-                <div class="upload-sub-area">
-                    <el-upload
-                    class="upload-demo"
-                    drag
-                    action="http://jsonplaceholder.typicode.com/api/posts/"
-                    multiple
-                    :on-change="handle"
-                    accept=".bin"
-                >
-                        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                        <div class="el-upload__text">
-                            将文件拖到此处，或
-                            <em>点击上传</em>
-                        </div>
-                    </el-upload>
-                    <el-text class="upload-name">PMS Container文件上传</el-text>
-                    <el-input placeholder="请填写回读信息，例1027640944"></el-input>
-                </div>
-
-                <div class="upload-sub-area">
-                    <el-upload
-                    class="upload-demo"
-                    drag
-                    action="http://jsonplaceholder.typicode.com/api/posts/"
-                    method="put"
-                    multiple
-                    :on-change="handle"
-                    accept=".bin"
-                >
-                        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                        <div class="el-upload__text">
-                            将文件拖到此处，或
-                            <em>点击上传</em>
-                        </div>
-                    </el-upload>
-                    <el-text class="upload-name">EMS Container文件上传</el-text>
-                    <el-input placeholder="请填写回读信息，例1027640944"></el-input>
-                </div>
-
-                <div class="upload-sub-area" style="visibility: hidden;">
-                    <el-upload
-                    class="upload-demo"
-                    drag
-                    action="http://jsonplaceholder.typicode.com/api/posts/"
-                    multiple
-                    :on-change="handle"
-                >
-                        <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-                        <div class="el-upload__text">
-                            将文件拖到此处，或
-                            <em>点击上传</em>
-                        </div>
-                    </el-upload>
-                    <el-text class="upload-name">类别六</el-text>
-                </div>
-            </div>
-
-            <el-button>
-                下一步
-            </el-button>
-        </el-main>
-        
     </div>
 </template>
 
@@ -162,15 +36,15 @@ const list = [
         info: '请填写回读信息,例2.0.8.14'
     },
     {
-        type: 'BMS Container',
+        type: 'BMS Container文件上传',
         info: '请填写回读信息,例1027640944'
     },
     {
-        type: 'PMS Container',
+        type: 'PMS Container文件上传',
         info: '请填写回读信息,例1027640944'
     },
     {
-        type: 'EMS Container',
+        type: 'EMS Container文件上传',
         info: '请填写回读信息,例1027640944'
     }
 ]
@@ -194,6 +68,10 @@ const upload = () => {
     .catch(function (error){
         console.log(error.response.data)
     })
+}
+
+const getinfo = (index: number) => {
+    return list[index].info
 }
 </script>
 
