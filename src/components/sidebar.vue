@@ -71,18 +71,19 @@ const items = [
                 index: '/upload',
                 title: '软件包上传',
                 permiss: '2',
-            },
-            {
-                index: '/approve',
-                title: '审批刷新请求',
-                permiss: '2',
-            },
+            }
         ],
     },
     {
         icon: 'DocumentCopy',
         index: '/logs',
         title: '日志管理',
+        permiss: '4',
+    },
+    {
+        icon: 'DocumentCopy',
+        index: '/task',
+        title: '任务管理',
         permiss: '3',
     },
     {
@@ -98,11 +99,11 @@ const items = [
         permiss: '2',
     },
     {
-        icon: 'CoffeeCup',
-        index: '/about',
-        title: '关于我们',
+        icon: 'Setting',
+        index: '/device',
+        title: '设备管理',
         permiss: '2',
-    }
+    },
 ];
 
 const route = useRoute();

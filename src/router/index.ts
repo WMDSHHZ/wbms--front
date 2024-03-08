@@ -86,13 +86,13 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "upload" */ '../views/upload.vue'),
             },
             {
-                path: '/approve',
-                name: 'approve',
+                path: '/task',
+                name: 'task',
                 meta: {
-                    title: '回读信息确认',
+                    title: '任务管理',
                     permiss: '2',
                 },
-                component: () => import(/* webpackChunkName: "approve" */ '../views/approve.vue'),
+                component: () => import(/* webpackChunkName: "task" */ '../views/task.vue'),
             }
         ],
     },
@@ -112,6 +112,14 @@ const routes: RouteRecordRaw[] = [
         },
         component: () => import(/* webpackChunkName: "403" */ '../views/403.vue'),
     },
+    {
+        path: '/device',
+        name: 'Device',
+        meta: {
+            title: '设备管理',
+        },
+        component: () => import(/* webpackChunkName: "device" */ '../views/device.vue'),
+    }
 ];
 
 const router = createRouter({

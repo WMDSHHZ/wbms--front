@@ -9,8 +9,6 @@
 					<el-button @click="getDeatil">详情</el-button>
 				</el-table-column>
 			</el-table>
-
-
 		</div>
 
 		<el-dialog v-model="dialogTableVisible">
@@ -21,7 +19,6 @@
 
 <script setup lang="ts" name="tabs">
 import axios from 'axios';
-import { tr } from 'element-plus/es/locale';
 import { ref, reactive } from 'vue';
 
 interface TableItem {
@@ -47,8 +44,11 @@ const getLog = () => {
 var dialogTableVisible = ref(false)
 const getDeatil = () => {
 	console.log("111")
+	console.log(dialogTableVisible)
 	dialogTableVisible.value = true
+	console.log(dialogTableVisible)
 }
+
 getLog()
 </script>
 

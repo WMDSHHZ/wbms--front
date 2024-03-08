@@ -15,6 +15,7 @@
                 <el-link href="/template.xlsx" target="_blank">下载模板</el-link>
                 <el-button type="primary" @click="uploadData">上传数据</el-button>
                 <el-button type="danger" @click="deleteData">清空数据</el-button>
+                <el-progress :percentage="progressPercent" status="success" />
             </div>
             <el-table :data="tableData" border class="table" header-cell-class-name="table-header" show-overflow-tooltip="true">
                 <el-table-column prop="number" label="托号" width="60px" align="center"></el-table-column>
@@ -41,9 +42,18 @@ interface TableItem {
 
 var tableData = ref<TableItem[]>([]);
 var tempTableData = ref<TableItem[]>([]);
+var progressPercent = ref()
 
 var importList = ref<any>([]);
 const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
+    let param = new FormData();
+    param.append("file",rawFile)
+    param.append("file_type", "MAC")
+    
+    axios.post('/file/output', param)
+        .catch(error => {
+            console.log(error)
+        })
     importList.value = await analysisExcel(rawFile);
     console.log(importList.value)
     return true;
