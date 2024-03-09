@@ -65,12 +65,12 @@ const items = [
             {
                 index: '/import',
                 title: '导入Excel',
-                permiss: '2',
+                permiss: '3',
             },
             {
                 index: '/upload',
                 title: '软件包上传',
-                permiss: '2',
+                permiss: '4',
             }
         ],
     },
@@ -78,32 +78,38 @@ const items = [
         icon: 'DocumentCopy',
         index: '/logs',
         title: '日志管理',
-        permiss: '4',
+        permiss: '5',
     },
     {
         icon: 'DocumentCopy',
         index: '/task',
         title: '任务管理',
-        permiss: '3',
+        permiss: '6',
     },
     {
         icon: 'DocumentCopy',
         index: '/record',
         title: '刷新纪录',
-        permiss: '2',
+        permiss: '7',
     },
     {
         icon: 'Setting',
         index: '/settings',
         title: '系统设置',
-        permiss: '2',
+        permiss: '8',
     },
     {
         icon: 'Setting',
         index: '/device',
         title: '设备管理',
-        permiss: '2',
+        permiss: '9',
     },
+    {
+        icon: 'Setting',
+        index: '/permission',
+        title: '权限管理',
+        permiss: '10',
+    }
 ];
 
 const route = useRoute();

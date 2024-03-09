@@ -4,7 +4,7 @@
             <div class="ms-title">电池刷新管理系统</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
-                    <el-input v-model="param.username" placeholder="username">
+                    <el-input v-model="param.username" placeholder="请输入用户名">
                         <template #prepend>
                             <el-button :icon="User"></el-button>
                         </template>
@@ -13,7 +13,7 @@
                 <el-form-item prop="password">
                     <el-input
                         type="password"
-                        placeholder="password"
+                        placeholder="请输入密码"
                         v-model="param.password"
                         @keyup.enter="submitForm(login)"
                     >
@@ -26,7 +26,6 @@
                     <el-button type="primary" @click="submitForm(login)">登录</el-button>
                 </div>
                 <el-checkbox class="login-tips" v-model="checked" label="记住密码" size="large" />
-                <p class="login-tips">Tips : 用户名和密码随便填。</p>
             </el-form>
         </div>
     </div>
@@ -71,9 +70,13 @@ const login = ref<FormInstance>();
 
 //登录校验
 const submitForm = (formEl: FormInstance | undefined) => {
-    if (!formEl) return;
+    if (!formEl) return;    //如果表单类型为undefined则返回
     formEl.validate((valid: boolean) => {
         if (valid) {
+            //todo添加登录验证#################################################
+
+
+            //#################################################################
             ElMessage.success('登录成功');
             localStorage.setItem('ms_username', param.username);
             const keys = permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
@@ -85,9 +88,10 @@ const submitForm = (formEl: FormInstance | undefined) => {
             } else {
                 localStorage.removeItem('login-param');
             }
+            return true
         } else {
-            ElMessage.error('登录失败');
-            return false;
+            ElMessage.error('登录失败')
+            return false
         }
     });
 };
