@@ -60,6 +60,12 @@
 				</template>
 			</el-tab-pane>
 		</el-tabs>
+
+		<div>
+			<el-dialog v-model="infoDialog">
+				info
+			</el-dialog>
+		</div>
 	</div>
 </template>
 
@@ -125,8 +131,10 @@ const passToStop = (index: number) => {
 	//todo 待完善
 }
 
+var infoDialog = ref(false)
 //获取详情
 const getDetail = (index: number) => {
+	infoDialog.value = true
 	//todo 待完善
 }
 

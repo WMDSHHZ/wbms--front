@@ -5,19 +5,25 @@
 				<el-table-column prop="message" label="内容"></el-table-column>
 				<el-table-column prop="level" label="错误等级" width="120px"></el-table-column>
 				<el-table-column prop="timestamp" label="日期" width="200px"></el-table-column>
-				<el-table-column width="100px" align="center">
-					<el-button @click="getDeatil">详情</el-button>
+				<el-table-column width="100px" align="center" label="操作">
+					<template #default="scope">
+                        <div class="opreation">
+                            <el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>
+                        </div>
+                    </template>
 				</el-table-column>
 			</el-table>
 		</div>
 
-		<el-dialog v-model="dialogTableVisible">
-			details
-		</el-dialog>
+		<div>
+			<el-dialog v-model="dialogTableVisible">
+				details
+			</el-dialog>
+		</div>
 	</div>
 </template>
 
-<script setup lang="ts" name="tabs">
+<script setup lang="ts" name="logs">
 import axios from 'axios';
 import { ref, reactive } from 'vue';
 
@@ -27,8 +33,18 @@ interface TableItem {
     timestamp: string,
 }
 
-//var logData = ref<TableItem[]>([]);
-var logData = reactive([]);
+var logData = reactive([
+	{
+		message: '123',
+		level: 'warning',
+		timestamp: '123'
+	},
+	{
+		message: '123',
+		level: 'warning',
+		timestamp: '123'
+	}
+]);
 const getLog = () => {
 	axios.get('/log/get')
 		.then(res => {
@@ -42,24 +58,18 @@ const getLog = () => {
 }
 
 var dialogTableVisible = ref(false)
-const getDeatil = () => {
+const getDetail = (index : number) => {
+	//todo 获取详情
 	console.log("111")
 	console.log(dialogTableVisible)
 	dialogTableVisible.value = true
 	console.log(dialogTableVisible)
 }
 
-getLog()
+//getLog()
 </script>
 
 <style scoped>
-.message-title {
-	cursor: pointer;
-}
-.handle-row {
-	margin-top: 30px;
-}
-
 .handle-box {
     display: flex;
     margin-bottom: 20px;

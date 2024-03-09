@@ -105,7 +105,7 @@ const items = [
         permiss: '9',
     },
     {
-        icon: 'Setting',
+        icon: 'lock',
         index: '/permission',
         title: '权限管理',
         permiss: '10',
