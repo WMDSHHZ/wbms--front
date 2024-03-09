@@ -1,167 +1,157 @@
 <template>
 	<div class="container">
-		<div style="margin-bottom: 10px;">
-			<span width="100px" style="margin-right: 50px;">失败个数: 12{{ successNum }}</span>
-			<span width="100px">成功个数: 0{{ failNum }}</span>
+		<div>
+			<div class="selectContainer">
+				<el-space :spacer="spacer">
+					<span>筛选条件</span>
+					<el-date-picker
+						v-model="dateValue"
+						type="daterange"
+						range-separator="To"
+						start-placeholder="起始日期"
+						end-placeholder="结束日期"
+						value-format="YYYY-MM-DD"
+					/>
+					<el-input placeholder="MAC地址" :model="macValue"></el-input>
+					<el-button @click="check">筛选</el-button>
+					<el-button @click="getNewRecord">获取最新记录</el-button>
+				</el-space>
+			</div>
 		</div>
-		<el-button @click="getNewRecord">获取最新记录</el-button>
-		<el-table :data="recordData" border class="table" style="width: 100%" >
-			<el-table-column prop="id" label="托号"></el-table-column>
-			<el-table-column prop="mac" label="MAC地址"></el-table-column>
-			<el-table-column prop="before" label="起始版本"></el-table-column>
-			<el-table-column prop="after" label="刷新后版本"></el-table-column>
-			<el-table-column prop="state" label="刷新状态"></el-table-column>
-			<el-table-column prop="time" label="刷新时间"></el-table-column>
-			<el-table-column prop="info" label="详情"></el-table-column>
-		</el-table>
-
+		<el-tabs v-model="page">
+			<el-tab-pane :label="`警告(${recordData.warning.length})`" name="first">
+				<el-table :data="recordData.warning" border class="table" style="width: 100%" >
+					<el-table-column prop="id" label="托号"></el-table-column>
+					<el-table-column prop="mac" label="MAC地址"></el-table-column>
+					<el-table-column prop="before" label="起始版本"></el-table-column>
+					<el-table-column prop="after" label="刷新后版本"></el-table-column>
+					<el-table-column prop="state" label="刷新状态"></el-table-column>
+					<el-table-column prop="time" label="刷新时间"></el-table-column>
+					<el-table-column label="操作">
+						<template #default="scope">
+							<div class="opreation">
+								<el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>
+							</div>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-tab-pane>
+			<el-tab-pane :label="`错误(${recordData.error.length})`" name="second">
+				<el-table :data="recordData.error" border class="table" style="width: 100%" >
+					<el-table-column prop="id" label="托号"></el-table-column>
+					<el-table-column prop="mac" label="MAC地址"></el-table-column>
+					<el-table-column prop="before" label="起始版本"></el-table-column>
+					<el-table-column prop="after" label="刷新后版本"></el-table-column>
+					<el-table-column prop="state" label="刷新状态"></el-table-column>
+					<el-table-column prop="time" label="刷新时间"></el-table-column>
+					<el-table-column label="操作">
+						<template #default="scope">
+							<div class="opreation">
+								<el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>
+							</div>
+						</template>
+					</el-table-column>
+				</el-table>
+			</el-tab-pane>
+		</el-tabs>
 	</div>
 </template>
 
 <script setup lang="ts" name="tabs">
-import { ref, reactive } from 'vue';
+import { ref, reactive, h } from 'vue';
 import axios from 'axios';
+import { ElDivider } from 'element-plus';
 
-interface TableItem {
-	id: number,
-	voltage: string,
-	temperature: string,
-    before: string,
-    after: string
-	state: string,
-    time: string
-}
+var macValue = ref(0)
+var page = ref('first')
+var dateValue = ref([])
+const spacer = h(ElDivider, { direction: 'vertical' })
 
-var successNum, failNum;
-var status
-const recordData = ref<TableItem[]>([]);
-const getRecord = () => {
-	recordData.value = [
+const recordData = reactive({
+	error: [
 		{
-			id: 123,
-			voltage: '3.3270V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
-		},		
-		{
-			id: 123,
-			voltage: '3.3314V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
+			id: '123',
+			mac: '123',
+			voltage: '123',
+			before: '123',
+			after: '123',
+			state: '错误',
+			time: '123'
 		},
 		{
-			id: 123,
-			voltage: '3.3039V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
-		},		
-		{
-			id: 123,
-			voltage: '3.3106V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
+			id: '123',
+			mac: '123',
+			voltage: '123',
+			before: '123',
+			after: '123',
+			state: '错误',
+			time: '123'
 		},
 		{
-			id: 123,
-			voltage: '3.3140V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
-		},		
+			id: '123',
+			mac: '123',
+			voltage: '123',
+			before: '123',
+			after: '123',
+			state: '错误',
+			time: '123'
+		}
+	],
+	warning: [
 		{
-			id: 123,
-			voltage: '3.3061V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
+			id: '123',
+			mac: '123',
+			voltage: '123',
+			before: '123',
+			after: '123',
+			state: '警告',
+			time: '123'
 		},
 		{
-			id: 123,
-			voltage: '3.3276V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
-		},		
-		{
-			id: 123,
-			voltage: '3.3105V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
+			id: '123',
+			mac: '123',
+			voltage: '123',
+			before: '123',
+			after: '123',
+			state: '警告',
+			time: '123'
 		},
 		{
-			id: 123,
-			voltage: '3.3222V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
-		},		
-		{
-			id: 123,
-			voltage: '3.3102V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
+			id: '123',
+			mac: '123',
+			voltage: '123',
+			before: '123',
+			after: '123',
+			state: '警告',
+			time: '123'
 		},
 		{
-			id: 123,
-			voltage: '3.3093V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
-		},		
-		{
-			id: 123,
-			voltage: '3.3292V',
-			temperature: '16℃',
-			before: '刷新前版本',
-    		after: '刷新后版本',
-			state: '成功',
-    		time: '2018-04-19 21:00:00'
-		},
+			id: '123',
+			mac: '123',
+			voltage: '123',
+			before: '123',
+			after: '123',
+			state: '警告',
+			time: '123'
+		}
 	]
-}
-const getNum = () => {
-	for(var i=0;i<recordData.value.length;i++){
-		if(recordData.value[i].state == '成功')
-			successNum++;
-		else
-			failNum++;
-	}
-}
+})
 
 const getNewRecord = () => {
-	axios.get('/battery/file_status')
-		.catch()
+	//todo 待完善
 }
 
-getRecord();
+//获取详情
+const getDetail = (index: number) => {
+	//todo 待完善
+}
+
+const check = () => {
+	console.log(dateValue.value[0])
+	console.log(dateValue.value[1])
+	console.log(dateValue.value.length)
+	console.log(macValue)
+}
 
 </script>
 
@@ -171,5 +161,8 @@ getRecord();
 }
 .handle-row {
 	margin-top: 30px;
+}
+.selectContainer{
+	display: flex;
 }
 </style>
