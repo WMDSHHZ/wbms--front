@@ -30,7 +30,7 @@
 					<el-table-column label="操作">
 						<template #default="scope">
 							<div class="opreation">
-								<el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>
+								<el-button size="small" @click="getDetail(recordData.warning[scope.$index].id)" type="info" plain>详情</el-button>
 							</div>
 						</template>
 					</el-table-column>
@@ -54,13 +54,19 @@
 				</el-table>
 			</el-tab-pane>
 		</el-tabs>
+
+		<div>
+            <el-dialog v-model="infoDialog">
+                details
+            </el-dialog>
+        </div>
 	</div>
 </template>
 
 <script setup lang="ts" name="tabs">
 import { ref, reactive, h } from 'vue';
 import axios from 'axios';
-import { ElDivider } from 'element-plus';
+import { ElDivider, ElMessage } from 'element-plus';
 
 var macValue = ref(0)
 var page = ref('first')
@@ -99,7 +105,7 @@ const recordData = reactive({
 	],
 	warning: [
 		{
-			id: '123',
+			id: '1',
 			mac: '123',
 			voltage: '123',
 			before: '123',
@@ -108,7 +114,7 @@ const recordData = reactive({
 			time: '123'
 		},
 		{
-			id: '123',
+			id: '2',
 			mac: '123',
 			voltage: '123',
 			before: '123',
@@ -117,7 +123,7 @@ const recordData = reactive({
 			time: '123'
 		},
 		{
-			id: '123',
+			id: '3',
 			mac: '123',
 			voltage: '123',
 			before: '123',
@@ -126,7 +132,7 @@ const recordData = reactive({
 			time: '123'
 		},
 		{
-			id: '123',
+			id: '4',
 			mac: '123',
 			voltage: '123',
 			before: '123',
@@ -142,8 +148,20 @@ const getNewRecord = () => {
 }
 
 //获取详情
-const getDetail = (index: number) => {
+var infoDialog = ref(false)
+const getDetail = (id: string) => {
 	//todo 待完善
+	console.log(id)
+	axios.get('/test_db' + id)
+	.then(res => {
+		infoDialog.value = true
+	})
+	.catch(error => {
+		ElMessage({
+			message: "获取详情失败，请检查网络连接",
+			type: 'error'
+		})
+	})
 }
 
 const check = () => {

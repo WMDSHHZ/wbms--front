@@ -76,21 +76,9 @@ const items = [
     },
     {
         icon: 'DocumentCopy',
-        index: '/logs',
-        title: '日志管理',
-        permiss: '5',
-    },
-    {
-        icon: 'DocumentCopy',
         index: '/task',
         title: '任务管理',
         permiss: '6',
-    },
-    {
-        icon: 'DocumentCopy',
-        index: '/record',
-        title: '刷新纪录',
-        permiss: '7',
     },
     {
         icon: 'Setting',
