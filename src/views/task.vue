@@ -113,7 +113,7 @@
 							<el-table-column label="操作">
 								<template #default="scope">
 									<div class="opreation">
-										<el-button size="small" @click="getInsideDetail(recordData.warning[scope.$index].id)" type="info" plain>详情</el-button>
+										<el-button size="small" @click="getInsideDetail(recordData.error[scope.$index].id)" type="info" plain>详情</el-button>
 									</div>
 								</template>
 							</el-table-column>
@@ -125,7 +125,7 @@
 
 			<el-dialog 
 			v-model="insideInfoDialog" 
-			width="70%" 
+			width="80%" 
 			:modal="false" 
 			:draggable="true">
 				<el-table :data="reflashData">
@@ -136,7 +136,32 @@
 					<el-table-column prop="suite_number" label="托号"></el-table-column>
 					<el-table-column prop="trace_code" label="回退码"></el-table-column>
 					<el-table-column prop="update_time" label="更新时间"></el-table-column>
-					<el-table-column prop="version_info" label="版本信息"></el-table-column>
+					<el-table-column label='版本信息'>
+						<el-table-column label="校验码">
+							<el-table-column label="旧校验码">
+								<template #default="scope">
+									{{ reflashData[scope.$index].version_info.BMS_CONTAINER.oldcrc }}
+								</template>
+							</el-table-column>
+							<el-table-column label="新校验码">
+								<template #default="scope">
+									{{ reflashData[scope.$index].version_info.BMS_CONTAINER.newcrc }}
+								</template>
+							</el-table-column>
+						</el-table-column>
+						<el-table-column label="版本号">
+							<el-table-column label="刷新前版本号">
+								<template #default="scope">
+									{{ reflashData[scope.$index].version_info.FIRMWARE.oldversion }}
+								</template>
+							</el-table-column>
+							<el-table-column label="刷新后版本号">
+								<template #default="scope">
+									{{ reflashData[scope.$index].version_info.FIRMWARE.newversion}}
+								</template>
+							</el-table-column>
+						</el-table-column>
+					</el-table-column>
 				</el-table>
 			</el-dialog>
 
@@ -266,14 +291,23 @@ interface reflashInfo {
 //var reflashData = ref<reflashInfo[]>([])
 const reflashData = ref([
 	{
-		mac_address: 'string',
-		module_number: 'string',
-		product_number: 'string',
-		status: 'string',
-		suite_number: 'string',
-		trace_code: 'string',
-		update_time: 'string',
-		version_info: 'string'
+		mac_address: "64F9C0000022BC9F",
+		module_number: "00FMEASY000004DBV0190513",
+		product_number: "1234811BS40644",
+		status: "finish",
+		suite_number: "BEV(1416)S311088",
+		trace_code: "NS23331MASY40513",
+		update_time: "2024-03-09 15:36:55",
+		version_info: {
+			BMS_CONTAINER: {
+			newcrc: "1827640944",
+			oldcrc: "1027640944"
+			},
+			FIRMWARE: {
+			newversion: "2.0.8.22",
+			oldversion: "2.0.8.10"
+			}
+		}
 	}
 ])
 
