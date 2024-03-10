@@ -173,6 +173,7 @@
 <script setup lang="ts" name="tabs">
 import { ref, reactive, h } from 'vue';
 import { ElDivider, ElMessage } from 'element-plus';
+import axios from 'axios';
 
 const message = ref('first');
 const state = reactive({
@@ -289,6 +290,7 @@ interface reflashInfo {
 }
 
 //var reflashData = ref<reflashInfo[]>([])
+
 const reflashData = ref([
 	{
 		mac_address: "64F9C0000022BC9F",
@@ -352,6 +354,20 @@ const getDetail = (index: number) => {
 var insideInfoDialog = ref(false)
 const getInsideDetail = (id: string) => {
 	insideInfoDialog.value = true
+	/*
+	axios.get('/device/detailedInfo' + id)
+	.then(res => {
+		
+		console.log(res)
+	})
+	.catch(error => {
+		ElMessage({
+			type: 'error',
+			message: '获取刷新详细记录失败，请检查网络连接或稍后重试'
+		})
+	})
+	*/
+	
 	console.log(id)
 }
 
