@@ -39,6 +39,7 @@ import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { Lock, User } from '@element-plus/icons-vue';
+import axios from 'axios';
 
 interface LoginInfo {
     username: string;
@@ -79,6 +80,21 @@ const submitForm = (formEl: FormInstance | undefined) => {
             //#################################################################
             ElMessage.success('登录成功');
             localStorage.setItem('ms_username', param.username);
+            //todo添加权限认证##################################################
+            /*
+            axios.get('/user/role' + param.username)
+            .then(res => {
+                const keys = permiss.defaultList[res.role == 'admin' ? 'admin' : 'user'];
+            })
+            .catch(error => {
+                ElMessage({
+                    type: 'error',
+                    message: '验证失败,请检查网络连接'
+                })
+                const keys = permiss.defaultList['user']
+            })
+            */
+            //#################################################################
             const keys = permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
             permiss.handleSet(keys);
             localStorage.setItem('ms_keys', JSON.stringify(keys));

@@ -7,6 +7,7 @@
                     <template #default="scope">
                         <div class="opreation">
                             <el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>
+                            <el-button size="small" @click="getTask(scope.$index)" type="info" plain>任务查看</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -15,7 +16,11 @@
 
         <div>
             <el-dialog v-model="infoDialog">
-                details
+                设备详情
+            </el-dialog>
+
+            <el-dialog v-model="taskInfoDialog">
+                任务信息
             </el-dialog>
         </div>
 
@@ -31,13 +36,19 @@ var deviceList = reactive([])
 const getDeviceList = () => {
     deviceList = [
         {
-            name: '123'
+            name: '设备1'
         },
         {
-            name: '456'
+            name: '设备2'
         },
         {
-            name: '789'
+            name: '设备3'
+        },
+        {
+            name: '设备4'
+        },
+        {
+            name: '设备5'
         }
     ]
 }
@@ -49,6 +60,12 @@ const getDetail = (index: number) => {
     infoDialog.value = true
     console.log(infoDialog.value)
 	//todo 待完善
+}
+
+var taskInfoDialog = ref(false)
+const getTask = (index: number) => {
+    taskInfoDialog.value = true
+    //todo 待完善
 }
 
 getDeviceList()

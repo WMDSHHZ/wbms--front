@@ -10,41 +10,13 @@
             unique-opened
             router
         >
-        <template v-for="item in items">
-                <template v-if="item.subs">
-                    <el-sub-menu :index="item.index" :key="item.index" v-permiss="item.permiss">
-                        <template #title>
-                            <el-icon>
-                                <component :is="item.icon"></component>
-                            </el-icon>
-                            <span>{{ item.title }}</span>
-                        </template>
-                        <template v-for="subItem in item.subs">
-                            <el-sub-menu
-                                v-if="subItem.subs"
-                                :index="subItem.index"
-                                :key="subItem.index"
-                                v-permiss="item.permiss"
-                            >
-                                <template #title>{{ subItem.title }}</template>
-                                <el-menu-item v-for="(threeItem, i) in subItem.subs" :key="i" :index="threeItem.index">
-                                    {{ threeItem.title }}
-                                </el-menu-item>
-                            </el-sub-menu>
-                            <el-menu-item v-else :index="subItem.index" v-permiss="item.permiss">
-                                {{ subItem.title }}
-                            </el-menu-item>
-                        </template>
-                    </el-sub-menu>
-                </template>
-                <template v-else>
-                    <el-menu-item :index="item.index" :key="item.index" v-permiss="item.permiss">
-                        <el-icon>
-                            <component :is="item.icon"></component>
-                        </el-icon>
-                        <template #title>{{ item.title }}</template>
-                    </el-menu-item>
-                </template>
+            <template v-for="item in items" :key="item.index">
+                <el-menu-item :index="item.index"  v-permiss="item.permiss">
+                    <el-icon>
+                        <component :is="item.icon"></component>
+                    </el-icon>
+                    <template #title>{{ item.title }}</template>
+                </el-menu-item>
             </template>
         </el-menu>
     </div>
@@ -57,34 +29,16 @@ import { useRoute } from 'vue-router';
 
 const items = [
     {
-        icon: 'Setting',
-        index: '1',
-        title: '配置管理',
-        permiss: '2',
-        subs: [
-            {
-                index: '/import',
-                title: '导入Excel',
-                permiss: '3',
-            },
-            {
-                index: '/upload',
-                title: '软件包上传',
-                permiss: '4',
-            }
-        ],
+        icon: 'upload',
+        index: '/import',
+        title: '任务创建',
+        permiss: '3',
     },
     {
         icon: 'DocumentCopy',
         index: '/task',
         title: '任务管理',
         permiss: '6',
-    },
-    {
-        icon: 'Setting',
-        index: '/settings',
-        title: '系统设置',
-        permiss: '8',
     },
     {
         icon: 'Setting',
@@ -97,7 +51,13 @@ const items = [
         index: '/permission',
         title: '权限管理',
         permiss: '10',
-    }
+    },
+    {
+        icon: 'Setting',
+        index: '/settings',
+        title: '系统设置',
+        permiss: '8',
+    },
 ];
 
 const route = useRoute();

@@ -1,9 +1,13 @@
 <template>
     <div class="container">
-        <div class="content-title">上传刷新软件包</div>
+        <div class="content-title">
+            <span>上传刷新软件包</span>
+            <el-button @click="forward" type="success">上一步</el-button>
+        </div>
+
         <el-table :data="list">
             <el-table-column prop="title" label="文件类型" width="200px"></el-table-column>
-            <el-table-column prop="info" label="回读信息填写">
+            <el-table-column label="回读信息填写">
                 <template #default="scope">
                     <el-input :placeholder="getInfo(scope.$index)"></el-input> 
                 </template>
@@ -19,12 +23,19 @@
                 </template>
             </el-table-column>
         </el-table>
+
+        <div>
+            <el-input placeholder="请输入主题" style="width: 90%" v-model="title"></el-input>
+            <el-button @click="createTask" type="success">创建任务</el-button>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const list = [
     {
@@ -64,13 +75,14 @@ const list = [
     }
 ]
 
+var infoList = ref([5])
+
 var upload_file, file_type
 const headers = {
     'Content-Type': 'multipart/form-data'
 }
 const handle = (rawFile: any) => {
     upload_file = rawFile
-    console.log(rawFile);
 };
 
 const upload = () => {
@@ -104,6 +116,36 @@ const getInfo = (index: number) => {
 const getType = (index: number) => {
     file_type = list[index].type
     console.log(file_type)
+}
+
+//返回MAC地址导入页面
+const router = useRouter();
+const forward = () => {
+    router.go(-1)
+}
+
+//创建任务
+var title = ref()
+const createTask = () => {
+    if(title.value != null && upload_file != null){
+        //todo 创建任务 数据库同步信息
+        ElMessage({
+            type: 'success',
+            message: '任务创建成功'
+        })
+    }else{
+        if(upload_file != null){
+            ElMessage({
+                type: 'error',
+                message: '请输入主题'
+            })
+        }else{
+            ElMessage({
+                type: 'error',
+                message: '请先上传刷新包文件'
+            })
+        }
+    }
 }
 </script>
 

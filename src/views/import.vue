@@ -13,8 +13,8 @@
                     <el-button class="mr10" type="success">批量导入</el-button>
                 </el-upload>
                 <el-link href="/template.xlsx" target="_blank">下载模板</el-link>
-                <el-button type="primary">上传数据</el-button>
                 <el-button type="danger" @click="deleteData">清空数据</el-button>
+                <el-button @click="next">下一步</el-button>
             </div>
             <el-table :data="tableData" border class="table" header-cell-class-name="table-header" show-overflow-tooltip="true">
                 <el-table-column prop="number" label="托号" width="200px" align="center"></el-table-column>
@@ -30,6 +30,7 @@ import axios from 'axios';
 import { ElMessage, UploadProps } from 'element-plus';
 import { ref } from 'vue';
 import * as XLSX from 'xlsx';
+import { useRouter } from 'vue-router';
 
 interface TableItem {
     number: number,
@@ -40,7 +41,6 @@ interface TableItem {
 }
 
 var tableData = ref<TableItem[]>([]);
-var progressPercent = ref()
 
 var importList = ref<any>([]);
 const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
@@ -107,6 +107,19 @@ const deleteData = () => {
     console.log(tableData.value)
     tableData = ref<TableItem[]>([]);
     console.log(tableData.value)
+}
+
+const router = useRouter();
+const next = () => {
+    if(tableData.value.length == 0){
+        ElMessage({
+            type: 'error',
+            message: '请先导入数据'
+        })
+    }else{
+        router.push('/upload')
+    }
+    
 }
 </script>
 
