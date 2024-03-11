@@ -49,7 +49,7 @@ const items = [
     {
         icon: 'lock',
         index: '/permission',
-        title: '权限管理',
+        title: '账号管理',
         permiss: '10',
     },
     {
