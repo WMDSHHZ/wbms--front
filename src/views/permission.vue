@@ -325,7 +325,18 @@ const submitCreate = () => {
 
 //重置密码
 const resetPassword = (index: number) => {
-	//todo
+	//默认重置密码为admin
+	let param = {
+		username: userList.value[index].username,
+		newPassword: 'admin'
+	}
+	axios.post('/user/update', param)
+	.then(res => {
+		ElMessage.success('密码重置成功')
+	})
+	.catch(error => {
+		ElMessage.error('密码重置失败，请检查网络连接或稍后再试')
+	})
 }
 
 getUserList()
