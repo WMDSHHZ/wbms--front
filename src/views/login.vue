@@ -84,11 +84,14 @@ const submitForm = (formEl: FormInstance | undefined) => {
             .then(res => {
                 ElMessage.success('登录成功');
                 localStorage.setItem('ms_username', param.username);
+                //暂存用户信息
+                sessionStorage.setItem('username', param.username)
                 //权限认证##################################################
                 axios.get('/user/role?username=' + param.username)
                 .then(res => {
                     let role = res.data.userRole.role == 'admin' ? 'admin' : 
                                res.data.userRole.role == 'operator' ? 'operator' : 'super_admin'
+                    sessionStorage.setItem('role', role)
                     const keys = permiss.defaultList[role];
                     permiss.handleSet(keys);
                     localStorage.setItem('ms_keys', JSON.stringify(keys));

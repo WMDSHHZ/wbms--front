@@ -3,13 +3,13 @@
 		<el-tabs v-model="page">
 			<el-tab-pane name="first" label="账号管理">
 				<el-table :data="userList">
-					<el-table-column prop="username" label="ID"></el-table-column>
+					<el-table-column prop="username" label="用户名"></el-table-column>
 					<el-table-column prop="role" label="所属用户组"></el-table-column>
 					<el-table-column label="操作" width="280px">
 						<template #default="scope">
 							<el-button type="primary" @click="changeUser(scope.$index)">修改</el-button>
 							<el-button type="danger" @click="deleteUser(scope.$index)">删除</el-button>
-							<el-button type="danger">重置密码</el-button>
+							<el-button type="danger" @click="resetPassword(scope.$index)">重置密码</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -46,23 +46,23 @@
 		</el-tabs>
 
 		<el-dialog
-		v-model="changeUserDialog">
+		v-model="changeUserDialog"
+		@close="changeUserDialogClose"
+		>
 			<el-form 
 			:model="changeUserForm"
 			label-position = "Right"
 			label-width="auto">
-				<el-form-item label="id">
-					<el-input v-model="changeUserForm.id" />
-				</el-form-item>
-				<el-form-item label="密码">
-					<el-input v-model="changeUserForm.password" />
+				<el-form-item label="用户名">
+					<el-input v-model="changeUserForm.username" />
 				</el-form-item>
 				<el-form-item label="所属用户组">
-					<el-select v-model="changeUserForm.group">
-						<el-option v-for="item in groups"
+					<el-select v-model="changeUserForm.role">
+						<el-option v-for="item in roles"
 						:key="item.value"
 						:label="item.label"
-						:value="item.value">
+						:value="item.value"
+						:disabled="item.disable">
 						</el-option>
 					</el-select>
 				</el-form-item>
@@ -89,7 +89,7 @@
 				</el-form-item>
 				<el-form-item label="所属用户组">
 					<el-select v-model="createUserForm.role">
-						<el-option v-for="item in groups"
+						<el-option v-for="item in roles"
 						:key="item.value"
 						:label="item.label"
 						:value="item.value">
@@ -197,6 +197,22 @@ const getUserList = async () => {
 	try{
 		const res = await axios.get('/user')
 		userList.value = res.data.userList
+		/*
+		if(sessionStorage.getItem('role') == 'admin'){
+			let temp = res.data.userList
+			//当前操作员为管理员，则无权对其他管理员和超级管理员进行管理
+			for(let i=0;i<temp.length;i++){
+				if(temp[i].role == 'operator'){
+					userList.value.push(temp[i])
+				}
+			}
+
+			roles.value[2].disable = true
+			console.log(roles.value)
+		}else{
+			userList.value = res.data.userList
+		}
+		*/
 	}
 	catch{
 		ElMessage.error("获取用户信息失败，请检查网络连接")
@@ -208,41 +224,56 @@ const getUserList = async () => {
 //修改用户信息###################################################
 var changeUserDialog = ref(false)
 var changeUserForm = reactive({
-	id: '',
-	password: '',
-	group: ''
+	username: '',
+	role: ''
 })
-const groups = [
+var roles = ref([
 	{
-		value: 'user',
-		label: '普通用户'
+		value: 'operator',
+		label: '普通用户',
+		disable: false
 	},
 	{
 		value: 'admin',
-		label: '管理员'
+		label: '管理员',
+		disable: false
 	},
 	{
-		value: 'superAdmin',
-		label: '超级管理员'
+		value: 'super_admin',
+		label: '超级管理员',
+		disable: false
 	}
-]
+])
 const changeUser = (index: number) => {
 	changeUserDialog.value = true
-	changeUserForm = userList[index]
+	changeUserForm = userList.value[index]
+	sessionStorage.setItem('oldUsername', userList.value[index].username)
+	sessionStorage.setItem('oldRole', userList.value[index].role)
 }
 //提交修改信息
 const submitChange = () => {
-	console.log(changeUserForm)
-	//todo 数据同步数据库
-
-	ElMessage({
-		type: 'success',
-		message: '修改成功',
+	let param = {
+		username: changeUserForm.username,
+		newRole: changeUserForm.role
+	}
+	axios.post('/user/update', param)
+	.then(res => {
+		ElMessage.success('修改成功')
+	})
+	.catch(error => {
+		ElMessage.error('修改失败，请检查网络连接或稍后再试')
 	})
 	changeUserDialog.value = false
 }
 
-//删除用户#######################################################
+//修改信息对话框关闭，回复原有信息
+const changeUserDialogClose = () => {
+	const index = userList.value.findIndex(user => user.username === changeUserForm.username);
+	userList.value[index].username = sessionStorage.getItem('oldUsername')
+	userList.value[index].role = sessionStorage.getItem('oldRole')
+}
+
+//删除用户
 const deleteUser = (index: number) => {
 	ElMessageBox.confirm(
 		'是否确定要删除该用户，该操作不可逆，请谨慎考虑?',
@@ -254,16 +285,25 @@ const deleteUser = (index: number) => {
 		}
 	)
 	.then(() => {
-	//todo 数据同步数据库
-	//axios.delete('/user/delete?username=')
-	ElMessage({
-		type: 'success',
-		message: '删除成功',
+		axios.delete('/user/delete?username=' + userList.value[index].username)
+		.then(res => {
+			if(res.data.success == true){
+				ElMessage.success('删除成功')
+				userList.value.splice(index)
+			}else{
+				throw new Error()
+			}
+		})
+		.catch(error => {
+			ElMessage.error('删除失败，请检查网络连接或稍后再试')
+		} )
 	})
+	.catch(() => {
+		ElMessage.warning('操作取消！')
 	})
 }
 
-//创建用户#######################################################
+//创建用户
 var createUserForm = reactive({
 	username: '',
 	password: '',
@@ -281,6 +321,11 @@ const submitCreate = () => {
 		ElMessage.error('创建失败，请检查网络连接')
 	})
 	createUserDialog.value = false
+}
+
+//重置密码
+const resetPassword = (index: number) => {
+	//todo
 }
 
 getUserList()

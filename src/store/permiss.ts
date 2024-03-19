@@ -11,7 +11,7 @@ export const usePermissStore = defineStore('permiss', {
 		return {
 			key: keys ? JSON.parse(keys) : <string[]>[],
 			defaultList: <ObjectList>{
-				admin: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+				admin: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
 				operator: ['1', '2', '3', '4', '8', '9'],
 				super_admin: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 			}

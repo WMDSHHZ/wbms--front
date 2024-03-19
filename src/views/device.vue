@@ -20,7 +20,7 @@
             </el-dialog>
 
             <el-dialog v-model="taskInfoDialog">
-                <div v-if="taskList.length == 0">
+                <div v-if="taskList.length == null">
                     该设备空闲中
                 </div>
                 <el-table v-else :data="taskList">
@@ -63,9 +63,9 @@ const getDetail = (index: number) => {
 var taskInfoDialog = ref(false)
 const getTask = (index: number) => {
     taskInfoDialog.value = true
-    //todo 待完善
     console.log(deviceList.value[index].status)
     if(deviceList.value[index].status == 'working'){
+        //todo 任务相关待完善
         taskList.value = deviceList.value[index].tasks
     }else{
         taskList.value = []
