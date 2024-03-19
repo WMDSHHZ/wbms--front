@@ -20,7 +20,12 @@
             </el-dialog>
 
             <el-dialog v-model="taskInfoDialog">
-                任务信息
+                <div v-if="taskList.length == 0">
+                    该设备空闲中
+                </div>
+                <el-table v-else :data="taskList">
+                    <el-table-column label="组件名称" prop="suite_number"></el-table-column>
+                </el-table>
             </el-dialog>
         </div>
 
@@ -29,43 +34,42 @@
 
 <script setup lang="ts" name="device">
 import axios from 'axios';
+import { ElMessage } from 'element-plus';
 import { ref, reactive } from "vue";
 
+
 //获取设备列表
-var deviceList = reactive([])
-const getDeviceList = () => {
-    deviceList = [
-        {
-            name: '设备1'
-        },
-        {
-            name: '设备2'
-        },
-        {
-            name: '设备3'
-        },
-        {
-            name: '设备4'
-        },
-        {
-            name: '设备5'
-        }
-    ]
+var deviceList = ref([])
+var taskList = ref([]);
+const getDeviceList = async () => {
+  try {
+    const res = await axios.get('/controllers');
+    deviceList.value = res.data.controllerList;
+  } catch (error) {
+    ElMessage.error('无法获取设备信息，请检查网络连接')
+    console.error(error);
+  }
 }
+
 
 //获取详情
 var infoDialog = ref(false)
 const getDetail = (index: number) => {
-    console.log(infoDialog.value)
     infoDialog.value = true
-    console.log(infoDialog.value)
 	//todo 待完善
+    console.log(deviceList.value[index])
 }
 
 var taskInfoDialog = ref(false)
 const getTask = (index: number) => {
     taskInfoDialog.value = true
     //todo 待完善
+    console.log(deviceList.value[index].status)
+    if(deviceList.value[index].status == 'working'){
+        taskList.value = deviceList.value[index].tasks
+    }else{
+        taskList.value = []
+    }
 }
 
 getDeviceList()

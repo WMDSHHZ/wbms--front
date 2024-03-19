@@ -3,19 +3,19 @@
 		<el-tabs v-model="page">
 			<el-tab-pane name="first" label="账号管理">
 				<el-table :data="userList">
-					<el-table-column prop="id" label="ID"></el-table-column>
-					<el-table-column prop="password" label="密码"></el-table-column>
-					<el-table-column prop="group" label="所属用户组"></el-table-column>
-					<el-table-column label="操作" width="170px">
+					<el-table-column prop="username" label="ID"></el-table-column>
+					<el-table-column prop="role" label="所属用户组"></el-table-column>
+					<el-table-column label="操作" width="280px">
 						<template #default="scope">
 							<el-button type="primary" @click="changeUser(scope.$index)">修改</el-button>
-							<el-button type="danger" @click="deleteUser">删除</el-button>
+							<el-button type="danger" @click="deleteUser(scope.$index)">删除</el-button>
+							<el-button type="danger">重置密码</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
 				<el-row>
 					<el-col :offset="10" :span="2">
-						<el-button type="primary" @click="creatUser" style="margin-top: 20px;">创建账户</el-button>
+						<el-button type="primary" @click="createUserDialog = true" style="margin-top: 20px;">创建账户</el-button>
 					</el-col>
 				</el-row>
 			</el-tab-pane>
@@ -82,13 +82,13 @@
 		v-model="createUserDialog">
 			<el-form :model="createUserForm">
 				<el-form-item label="id">
-					<el-input v-model="createUserForm.id" />
+					<el-input v-model="createUserForm.username" />
 				</el-form-item>
 				<el-form-item label="密码">
 					<el-input v-model="createUserForm.password" />
 				</el-form-item>
 				<el-form-item label="所属用户组">
-					<el-select v-model="createUserForm.group">
+					<el-select v-model="createUserForm.role">
 						<el-option v-for="item in groups"
 						:key="item.value"
 						:label="item.label"
@@ -109,7 +109,7 @@
 import { reactive, ref } from 'vue';
 import { ElTree, ElMessageBox, ElMessage } from 'element-plus';
 import { usePermissStore } from '../store/permiss';
-import { tr } from 'element-plus/es/locale';
+import axios from 'axios';
 
 const role = ref<string>('admin');
 
@@ -192,23 +192,18 @@ const handleChange = (val: string[]) => {
 	tree.value!.setCheckedKeys(permiss.defaultList[role.value]);
 };
 
-var userList = reactive([
-	{
-		id: '123',
-		password: '123',
-		group: '普通用户'
-	},
-	{
-		id: 'admin',
-		password: '123',
-		group: '管理员'
-	},
-	{
-		id: '456',
-		password: '123',
-		group: '普通用户'
+var userList = ref([])
+const getUserList = async () => {
+	try{
+		const res = await axios.get('/user')
+		userList.value = res.data.userList
 	}
-])
+	catch{
+		ElMessage.error("获取用户信息失败，请检查网络连接")
+	}
+	
+}
+
 
 //修改用户信息###################################################
 var changeUserDialog = ref(false)
@@ -248,7 +243,7 @@ const submitChange = () => {
 }
 
 //删除用户#######################################################
-const deleteUser = () => {
+const deleteUser = (index: number) => {
 	ElMessageBox.confirm(
 		'是否确定要删除该用户，该操作不可逆，请谨慎考虑?',
 		'Warning',
@@ -260,6 +255,7 @@ const deleteUser = () => {
 	)
 	.then(() => {
 	//todo 数据同步数据库
+	//axios.delete('/user/delete?username=')
 	ElMessage({
 		type: 'success',
 		message: '删除成功',
@@ -269,26 +265,25 @@ const deleteUser = () => {
 
 //创建用户#######################################################
 var createUserForm = reactive({
-	id: '',
+	username: '',
 	password: '',
-	group: ''
+	role: ''
 })
 var createUserDialog = ref(false)
-const creatUser = () => {
-	createUserDialog.value = true
-}
 const submitCreate = () => {
 	console.log(createUserForm)
-	//todo 数据同步数据库
-
-	ElMessage({
-		type: 'success',
-		message: '新建成功',
+	//todo 可以添加一个等待样式
+	axios.post('/user/add', createUserForm)
+	.then(res => {
+		ElMessage.success('创建成功')
+	})
+	.catch(error => {
+		ElMessage.error('创建失败，请检查网络连接')
 	})
 	createUserDialog.value = false
 }
 
-
+getUserList()
 </script>
 
 <style scoped>

@@ -12,7 +12,6 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 axios.defaults.baseURL = "http://localhost:5000";
-axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*'
 app.config.globalProperties.$axios = axios;
 app.config.globalProperties.$target = "http://localhost:5000";
 app.config.globalProperties.$config = {

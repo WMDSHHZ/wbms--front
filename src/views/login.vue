@@ -74,37 +74,46 @@ const submitForm = (formEl: FormInstance | undefined) => {
     if (!formEl) return;    //如果表单类型为undefined则返回
     formEl.validate((valid: boolean) => {
         if (valid) {
-            //todo添加登录验证#################################################
 
-
-            //#################################################################
-            ElMessage.success('登录成功');
-            localStorage.setItem('ms_username', param.username);
-            //todo添加权限认证##################################################
-            /*
-            axios.get('/user/role' + param.username)
+            let user = {
+                "username": param.username,
+                "password": param.password
+            }
+            
+            axios.post('/user/checkPassword', user)
             .then(res => {
-                const keys = permiss.defaultList[res.role == 'admin' ? 'admin' : 'user'];
+                ElMessage.success('登录成功');
+                localStorage.setItem('ms_username', param.username);
+                //权限认证##################################################
+                axios.get('/user/role?username=' + param.username)
+                .then(res => {
+                    let role = res.data.userRole.role == 'admin' ? 'admin' : 
+                               res.data.userRole.role == 'operator' ? 'operator' : 'super_admin'
+                    const keys = permiss.defaultList[role];
+                    permiss.handleSet(keys);
+                    localStorage.setItem('ms_keys', JSON.stringify(keys));
+                })
+                .catch(error => {
+                    console.log(error)
+                    ElMessage.warning('验证失败,请检查网络连接,当前权限默认为普通用户')
+                    const keys = permiss.defaultList['operator']
+                    permiss.handleSet(keys);
+                    localStorage.setItem('ms_keys', JSON.stringify(keys));
+                })
+                //###########################################################
+
+                router.push('/import');
+                if (checked.value) {
+                    localStorage.setItem('login-param', JSON.stringify(param));
+                } else {
+                    localStorage.removeItem('login-param');
+                }
+                return true
             })
             .catch(error => {
-                ElMessage({
-                    type: 'error',
-                    message: '验证失败,请检查网络连接'
-                })
-                const keys = permiss.defaultList['user']
+                ElMessage.error('用户不存在，请检查用户名与密码')
+                return false
             })
-            */
-            //#################################################################
-            const keys = permiss.defaultList[param.username == 'admin' ? 'admin' : 'user'];
-            permiss.handleSet(keys);
-            localStorage.setItem('ms_keys', JSON.stringify(keys));
-            router.push('/import');
-            if (checked.value) {
-                localStorage.setItem('login-param', JSON.stringify(param));
-            } else {
-                localStorage.removeItem('login-param');
-            }
-            return true
         } else {
             ElMessage.error('登录失败')
             return false
