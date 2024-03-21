@@ -33,31 +33,31 @@ const routes: RouteRecordRaw[] = [
                 component: () => import(/* webpackChunkName: "upload" */ '../views/upload.vue'),
             },
             {
-                path: '/logs',
-                name: 'logs',
-                meta: {
-                    title: '日志管理',
-                    permiss: '5',
-                },
-                component: () => import(/* webpackChunkName: "logs" */ '../views/logs.vue'),
-            },
-            {
                 path: '/task',
                 name: 'task',
                 meta: {
                     title: '任务管理',
-                    permiss: '6',
+                    permiss: '5',
                 },
                 component: () => import(/* webpackChunkName: "task" */ '../views/task.vue'),
             },
             {
-                path: '/record',
-                name: 'record',
+                path: '/device',
+                name: 'Device',
                 meta: {
-                    title: '刷新纪录',
+                    title: '设备管理',
+                    permiss: '6',
+                },
+                component: () => import(/* webpackChunkName: "device" */ '../views/device.vue'),
+            },
+            {
+                path: '/permission',
+                name: 'permission',
+                meta: {
+                    title: '权限管理',
                     permiss: '7',
                 },
-                component: () => import(/* webpackChunkName: "record" */ '../views/record.vue'),
+                component: () => import(/* webpackChunkName: "permission" */ '../views/permission.vue'),
             },
             {
                 path: '/settings',
@@ -68,24 +68,6 @@ const routes: RouteRecordRaw[] = [
                 },
                 component: () => import(/* webpackChunkName: "settings" */ '../views/settings.vue'),
             },
-            {
-                path: '/device',
-                name: 'Device',
-                meta: {
-                    title: '设备管理',
-                    permiss: '9',
-                },
-                component: () => import(/* webpackChunkName: "device" */ '../views/device.vue'),
-            },
-            {
-                path: '/permission',
-                name: 'permission',
-                meta: {
-                    title: '权限管理',
-                    permiss: '10',
-                },
-                component: () => import(/* webpackChunkName: "permission" */ '../views/permission.vue'),
-            }
         ],
     },
     {
@@ -103,24 +85,7 @@ const routes: RouteRecordRaw[] = [
             title: '没有权限',
         },
         component: () => import(/* webpackChunkName: "403" */ '../views/403.vue'),
-    },
-    {
-        path: '/user',
-        name: 'user',
-        meta: {
-            title: '个人中心',
-        },
-        component: () => import(/* webpackChunkName: "user" */ '../views/user.vue'),
-    },
-    {
-        path: '/test',
-        name: 'test',
-        meta: {
-            title: '11',
-        },
-        component: () => import(/* webpackChunkName: "test" */ '../views/test.vue'),
     }
-
 ];
 
 const router = createRouter({

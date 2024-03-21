@@ -38,6 +38,7 @@
 							default-expand-all
 							show-checkbox
 							:default-checked-keys="checkedKeys"
+							@change="changeSelectedRole"
 						/>
 					</div>
 					<el-button type="primary" @click="onSubmit">保存权限</el-button>
@@ -121,12 +122,8 @@ interface Tree {
 
 const data: Tree[] = [
 	{
-		id: '1',
-		label: '系统首页'
-	},
-	{
 		id: '2',
-		label: '配置管理',
+		label: '任务创建',
 		children: [
 			{
 				id: '3',
@@ -140,29 +137,20 @@ const data: Tree[] = [
 	},
 	{
 		id: '5',
-		label: '日志管理'
-	},
-	{
-		id: '6',
 		label: '任务管理'
 	},
 	{
-		id: '7',
-		label: '刷新纪录'
+		id: '6',
+		label: '设备管理'
 	},
-
+	{
+		id: '7',
+		label: '权限管理'
+	},
 	{
 		id: '8',
 		label: '系统设置'
 	},
-	{
-		id: '9',
-		label: '设备管理'
-	},
-	{
-		id: '10',
-		label: '权限管理'
-	}
 	
 	
 ];
@@ -172,9 +160,13 @@ const permiss = usePermissStore();
 // 获取当前权限
 const checkedKeys = ref<string[]>([]);
 const getPremission = () => {
-	//todo 请求接口返回权限
 	checkedKeys.value = permiss.defaultList[role.value];
 };
+
+const changeSelectedRole = () => {
+	//todo 获取权限
+}
+
 getPremission();
 
 // 保存权限
