@@ -187,7 +187,7 @@ const handleChange = (val: string[]) => {
 var userList = ref([])
 const getUserList = async () => {
 	try{
-		const res = await axios.get('/user')
+		const res = await axios.get('/users')
 		userList.value = res.data.userList
 		/*
 		if(sessionStorage.getItem('role') == 'admin'){

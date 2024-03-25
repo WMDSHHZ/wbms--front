@@ -1,8 +1,8 @@
 <template>
 	<div class="container">
 		<el-tabs v-model="message">
-			<el-tab-pane :label="`待审批任务(${state.unread.length})`" name="first">
-				<el-table :data="state.unread" style="width: 100%" border>
+			<el-tab-pane :label="`待审批任务(${taskList.unread.length})`" name="first">
+				<el-table :data="taskListForShow.unread" style="width: 100%" border>
 					<el-table-column prop="id" label="编号" width="180"></el-table-column>
 					<el-table-column prop="title" label="主题"></el-table-column>
 					<el-table-column width="200" label="操作">
@@ -10,45 +10,66 @@
 							<div class="opreation">
 								<el-button size="small" @click="unreadToRead(scope.$index)" type="success" plain>通过</el-button>
 								<el-button size="small" @click="readToBack(scope.$index)" type="danger" plain>驳回</el-button>
-								<el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>
+								<el-button size="small" @click="getTaskDetail(scope.$index,'unread')" type="info" plain>详情</el-button>
 							</div>
 						</template>
 					</el-table-column>
 				</el-table>
+				<el-pagination
+				v-model:current-page="currentPage.unread"
+				v-model:page-size="pageSize"
+				layout="total, prev, pager, next, jumper"
+				:total="taskList.unread.length"
+				@current-change="handleCurrentChange('unread')"
+				/>
 				<div class="handle-row">
 					<el-button type="primary" @click="readAll">全部通过</el-button>
 				</div>
 			</el-tab-pane>
-			<el-tab-pane :label="`已审批任务(${state.pass.length})`" name="second">
+			<el-tab-pane :label="`已审批任务(${taskList.pass.length})`" name="second">
 				<template v-if="message === 'second'">
-					<el-table :data="state.pass" style="width: 100%" border>
+					<el-table :data="taskListForShow.pass" style="width: 100%" border>
 						<el-table-column prop="id" label="编号" width="180"></el-table-column>
 						<el-table-column prop="title" label="主题"></el-table-column>
 						<el-table-column width="200" label="操作">
 							<template #default="scope">
 								<div class="opreation">
 									<el-button type="danger" size="small" @click="passToStop(scope.$index)" plain>停止</el-button>
-									<el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>
+									<el-button size="small" @click="getTaskDetail(scope.$index,'pass')" type="info" plain>详情</el-button>
 								</div>
 							</template>
 						</el-table-column>
 					</el-table>
+					<el-pagination
+					v-model:current-page="currentPage.pass"
+					v-model:page-size="pageSize"
+					layout="total, prev, pager, next, jumper"
+					:total="taskList.pass.length"
+					@current-change="handleCurrentChange('pass')"
+					/>
 				</template>
 			</el-tab-pane>
-			<el-tab-pane :label="`已驳回任务(${state.back.length})`" name="third">
+			<el-tab-pane :label="`已驳回任务(${taskList.back.length})`" name="third">
 				<template v-if="message === 'third'">
-					<el-table :data="state.back" style="width: 100%" border>
+					<el-table :data="taskListForShow.back" style="width: 100%" border>
 						<el-table-column prop="id" label="编号" width="180"></el-table-column>
 						<el-table-column prop="title" label="主题"></el-table-column>
 						<el-table-column width="200" label="操作">
 							<template #default="scope">
 								<div class="opreation">
 									<el-button size="small" @click="backToPass(scope.$index)" type="success" plain>恢复</el-button>
-									<el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>
+									<el-button size="small" @click="getTaskDetail(scope.$index,'back')" type="info" plain>详情</el-button>
 								</div>
 							</template>
 						</el-table-column>
 					</el-table>
+					<el-pagination
+					v-model:current-page="currentPage.back"
+					v-model:page-size="pageSize"
+					layout="total, prev, pager, next, jumper"
+					:total="taskList.back.length"
+					@current-change="handleCurrentChange('back')"
+					/>
 				</template>
 			</el-tab-pane>
 		</el-tabs>
@@ -101,7 +122,7 @@
 						<el-table :data="reflashData.finish" border class="table" style="width: 100%" >
 							<el-table-column prop="suite_number" label="托号"></el-table-column>
 							<el-table-column prop="mac_address" label="MAC地址"></el-table-column>
-							<el-table-column label="版本号">
+							<el-table-column v-if="reflashData.type == 'pass'" label="版本号">
 								<el-table-column label="刷新前版本号">
 									<template #default="scope">
 										{{ reflashData.finish[scope.$index].version_info.FIRMWARE.oldversion }}
@@ -113,8 +134,10 @@
 									</template>
 								</el-table-column>
 						    </el-table-column>
+							<el-table-column v-else label="目标版本号"></el-table-column>
 							<el-table-column prop="status" label="刷新状态"></el-table-column>
 							<el-table-column prop="update_time" label="刷新时间"></el-table-column>
+							<el-table-column v-if="reflashData.type == 'pass'" prop="device_id" label="执行任务设备编号"></el-table-column>
 							<el-table-column label="操作">
 								<template #default="scope">
 									<div class="opreation">
@@ -234,10 +257,9 @@
 import { ref, reactive, h } from 'vue';
 import { ElDivider, ElMessage } from 'element-plus';
 import axios from 'axios';
-import { ca } from 'element-plus/es/locale';
 
 const message = ref('first');
-const state = reactive({
+var taskList = reactive({
 	unread: [
 		{
 			id: '202101010001',
@@ -246,6 +268,55 @@ const state = reactive({
 		},
 		{
 			id: '202101010002',
+			date: '2018-04-19 21:00:00',
+			title: '升级至2.0.8.8'
+		},
+		{
+			id: '202101010003',
+			date: '2018-04-19 20:00:00',
+			title: '升级至2.0.8.10'
+		},
+		{
+			id: '202101010004',
+			date: '2018-04-19 21:00:00',
+			title: '升级至2.0.8.8'
+		},
+		{
+			id: '202101010005',
+			date: '2018-04-19 20:00:00',
+			title: '升级至2.0.8.10'
+		},
+		{
+			id: '202101010006',
+			date: '2018-04-19 21:00:00',
+			title: '升级至2.0.8.8'
+		},
+		{
+			id: '202101010007',
+			date: '2018-04-19 20:00:00',
+			title: '升级至2.0.8.10'
+		},
+		{
+			id: '202101010008',
+			date: '2018-04-19 21:00:00',
+			title: '升级至2.0.8.8'
+		},		{
+			id: '202101010009',
+			date: '2018-04-19 20:00:00',
+			title: '升级至2.0.8.10'
+		},
+		{
+			id: '202101010010',
+			date: '2018-04-19 21:00:00',
+			title: '升级至2.0.8.8'
+		},
+		{
+			id: '202101010011',
+			date: '2018-04-19 20:00:00',
+			title: '升级至2.0.8.10'
+		},
+		{
+			id: '202101010012',
 			date: '2018-04-19 21:00:00',
 			title: '升级至2.0.8.8'
 		}
@@ -270,9 +341,14 @@ const state = reactive({
 		}
 	]
 });
+var taskListForShow = reactive({
+	unread: [],
+	pass: [],
+	back: []
+})
 const spacer = h(ElDivider, { direction: 'vertical' })
 
-var page = ref('first')
+const page = ref('first')
 
 interface reflashInfo {
 	mac_address: string;
@@ -389,7 +465,8 @@ var reflashData = reactive({
 				}
 			}
 		}
-	]
+	],
+	type: 'pass'
 })
 
 var taskStatus = reactive({
@@ -444,8 +521,8 @@ const handleAllocatedChange = () => {
 				}
 			}
 		}
-		let item = state.unread.splice(readIndex, 1);
-		state.pass = item.concat(state.pass);
+		let item = taskList.unread.splice(readIndex, 1);
+		taskList.pass = item.concat(taskList.pass);
 	}
 	selectedDeviceList = ref([])
 	
@@ -454,30 +531,31 @@ const handleAllocatedChange = () => {
 
 //待处理->驳回
 const readToBack = (index: number) => {
-	let item = state.unread.splice(index, 1)
-	state.back = item.concat(state.back)
+	let item = taskList.unread.splice(index, 1)
+	taskList.back = item.concat(taskList.back)
 }
 
 //驳回->通过
 const backToPass = (index: number) => {
-	let item = state.back.splice(index, 1)
-	state.pass = item.concat(state.pass)
+	let item = taskList.back.splice(index, 1)
+	taskList.pass = item.concat(taskList.pass)
 }
 
 //停止处理该任务
 const passToStop = (index: number) => {
-	state.pass.splice(index, 1)
+	taskList.pass.splice(index, 1)
 	//todo 待完善
 }
 
-//获取详情
+//获取任务详情
 var infoDialog = ref(false)
-const getDetail = (index: number) => {
+const getTaskDetail = (index: number, type: string) => {
 	infoDialog.value = true
+	reflashData.type = type
 	//todo 待完善
 }
 
-//获取刷新纪录详情
+//获取任务更加详情信息
 var insideInfoDialog = ref(false)
 const getInsideDetail = (id: string) => {
 	insideInfoDialog.value = true
@@ -500,13 +578,16 @@ const getInsideDetail = (id: string) => {
 
 //全部通过
 const readAll = () => {
-	let item = state.unread.splice(0,state.unread.length)
-	state.pass = item.concat(state.pass);
+	let item = taskList.unread.splice(0,taskList.unread.length)
+	taskList.pass = item.concat(taskList.pass);
 }
 
 //获取任务列表
 const getTask = () => {
 	//todo
+	handleCurrentChange('unread')
+	handleCurrentChange('pass')
+	handleCurrentChange('back')
 }
 
 //筛选
@@ -531,12 +612,59 @@ const check = () => {
 	}
 
 }
+
+//分页设置######################################
+const pageSize = ref(10)	//设置每页最大展示数量
+
+//当前页码
+var currentPage = reactive({
+	unread: 1,
+	pass: 1,
+	back: 1,
+})
+
+//页码改变事件
+const handleCurrentChange = (type: string) => {
+	let temp
+	switch(type){
+		case 'unread': 
+			taskListForShow.unread = []
+			if(currentPage.unread*pageSize.value >  taskList.unread.length){
+				temp = taskList.unread.slice((currentPage.unread-1)*pageSize.value)
+			}else{
+				temp = taskList.unread.slice((currentPage.unread-1)*pageSize.value, 
+											currentPage.unread*pageSize.value)
+			}
+			taskListForShow.unread = taskListForShow.unread.concat(temp)
+			break
+		case 'pass':
+			taskListForShow.pass = []
+			if(currentPage.pass*pageSize.value >  taskList.pass.length){
+				temp = taskList.pass.slice((currentPage.pass-1)*pageSize.value)
+			}else{
+				temp = taskList.pass.slice((currentPage.pass-1)*pageSize.value, 
+											currentPage.pass*pageSize.value)
+			}
+			taskListForShow.pass = taskListForShow.pass.concat(temp)
+			break
+		case 'back':
+			taskListForShow.back = []
+			if(currentPage.back*pageSize.value >  taskList.back.length){
+				temp = taskList.back.slice((currentPage.back-1)*pageSize.value)
+			}else{
+				temp = taskList.back.slice((currentPage.back-1)*pageSize.value, 
+											currentPage.back*pageSize.value)
+			}
+			taskListForShow.back = taskListForShow.back.concat(temp)
+			break
+	}
+}
+
+
+getTask()
 </script>
 
-<style>
-.message-title {
-	cursor: pointer;
-}
+<style scoped>
 .handle-row {
 	margin-top: 30px;
 }

@@ -41,6 +41,7 @@ import { ref, reactive } from "vue";
 //获取设备列表
 var deviceList = ref([])
 var taskList = ref([]);
+/*
 const getDeviceList = async () => {
   try {
     const res = await axios.get('/controllers');
@@ -49,6 +50,17 @@ const getDeviceList = async () => {
     ElMessage.error('无法获取设备信息，请检查网络连接')
     console.error(error);
   }
+}
+*/
+const getDeviceList = () => {
+    axios.get('/controllers')
+    .then(res => {
+        deviceList.value = res.data.controllerList;
+        ElMessage.success('设备信息获取成功')
+    })
+    .catch(error => {
+        ElMessage.error('无法获取设备信息，请检查网络连接')
+    })
 }
 
 

@@ -86,14 +86,11 @@ const handle = (rawFile: any) => {
 };
 
 const upload = () => {
-    console.log(upload_file.raw.name)
-    console.log(file_type)
     var param = new FormData();
     param.append("file", upload_file.raw)
     param.append("file_type", file_type)
-    console.log(param.get("file"))
 
-    axios.post('/file/output', param)
+    axios.post('/file/input', param)
     .then(res => {
         ElMessage({
             type: 'success',
@@ -115,7 +112,6 @@ const getInfo = (index: number) => {
 
 const getType = (index: number) => {
     file_type = list[index].type
-    console.log(file_type)
 }
 
 //返回MAC地址导入页面

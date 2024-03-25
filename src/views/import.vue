@@ -48,15 +48,12 @@ const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
     param.append("file",rawFile)
     param.append("file_type", "DEVICE_INFO")
     
-    axios.post('/file/output', param)
+    axios.post('/file/input', param)
     .then(res => {
-        ElMessage({
-            type: 'success',
-            message: '上传成功'
-        })
+        ElMessage.success('上传成功')
     })
     .catch(error => {
-        console.log(error)
+        ElMessage.error('上传失败')
     })
     importList.value = await analysisExcel(rawFile);
     console.log(importList.value.length)
