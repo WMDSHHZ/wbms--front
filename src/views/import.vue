@@ -114,6 +114,7 @@ const next = () => {
             message: '请先导入数据'
         })
     }else{
+        sessionStorage.setItem('flag', 'true')
         router.push('/upload')
     }
     

@@ -3,6 +3,7 @@ import { usePermissStore } from '../store/permiss';
 import Home from '../views/home.vue';
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import { ElMessage } from 'element-plus';
 
 const routes: RouteRecordRaw[] = [
     {
@@ -21,7 +22,9 @@ const routes: RouteRecordRaw[] = [
                     title: '导入Excel',
                     permiss: '3',
                 },
+                
                 component: () => import(/* webpackChunkName: "import" */ '../views/import.vue'),
+                
             },
             {
                 path: '/upload',
@@ -29,6 +32,16 @@ const routes: RouteRecordRaw[] = [
                 meta: {
                     title: '上传刷新包',
                     permiss: '4',
+                },
+                beforeEnter: (to, from, next) => {
+                    // 路由进入前的操作
+                    if(sessionStorage.getItem('flag')  == 'true'){
+                        next()
+                    }else{
+                        ElMessage.error('请先导入MAC地址')
+                        next('/import')
+                    }
+                    
                 },
                 component: () => import(/* webpackChunkName: "upload" */ '../views/upload.vue'),
             },
@@ -95,7 +108,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
     NProgress.start();
-    const role = localStorage.getItem('ms_username');
+    const role = sessionStorage.getItem('ms_username');
     const permiss = usePermissStore();
     if (!role && to.path !== '/login') {
         next('/login');

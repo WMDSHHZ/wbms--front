@@ -83,7 +83,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
             axios.post('/user/checkPassword', user)
             .then(res => {
                 ElMessage.success('登录成功');
-                localStorage.setItem('ms_username', param.username);
+                sessionStorage.setItem('ms_username', param.username);    //用于路由守卫
                 //暂存用户信息
                 sessionStorage.setItem('username', param.username)
                 //权限认证##################################################
