@@ -475,38 +475,28 @@ var taskStatus = reactive({
 	failed: 1
 })
 
-var deviceList = ref([
-	{
-		name: '设备一',
-		status: true,
-	},
-	{
-		name: '设备二',
-		status: true,
-	},
-	{
-		name: '设备三',
-		status: true,
-	},	{
-		name: '设备四',
-		status: true,
-	},	{
-		name: '设备五',
-		status: true,
-	}
-])
+var deviceList = ref([])
+//获取设备列表
+const getDeviceList = () => {
+	axios.get('/controllers')
+	.then(res => {
+		deviceList.value = res.data.controllerList
+	})
+	.catch(error => {
+		ElMessage.error('获取设备信息失败，请检查网络连接或刷新页面')
+	})
+}
 //待处理->通过
 var allocateTaskDialog = ref(false)
-var readIndex = 0
+var readIndex = 0	//保存所选任务在数组中的位置，以便分配设备后将其从数组中删除
 const unreadToRead = (index: number) => {
 	allocateTaskDialog.value = true
-	readIndex = index	
-	//todo 设备分配
-	
+	readIndex = index		
 };
 
 var selectedDeviceList = ref([])
 var selected = false
+//设备分配
 const handleAllocatedChange = () => {
 	if(selectedDeviceList.value.length == 0 && selected){
 		ElMessage({
@@ -662,6 +652,7 @@ const handleCurrentChange = (type: string) => {
 
 
 getTask()
+getDeviceList()
 </script>
 
 <style scoped>

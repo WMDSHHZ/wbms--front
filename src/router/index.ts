@@ -20,7 +20,7 @@ const routes: RouteRecordRaw[] = [
                 name: 'import',
                 meta: {
                     title: '导入Excel',
-                    permiss: '3',
+                    permiss: '1',
                 },
                 
                 component: () => import(/* webpackChunkName: "import" */ '../views/import.vue'),
@@ -31,7 +31,7 @@ const routes: RouteRecordRaw[] = [
                 name: 'upload',
                 meta: {
                     title: '上传刷新包',
-                    permiss: '4',
+                    permiss: '2',
                 },
                 beforeEnter: (to, from, next) => {
                     // 路由进入前的操作
@@ -50,7 +50,7 @@ const routes: RouteRecordRaw[] = [
                 name: 'task',
                 meta: {
                     title: '任务管理',
-                    permiss: '5',
+                    permiss: '3',
                 },
                 component: () => import(/* webpackChunkName: "task" */ '../views/task.vue'),
             },
@@ -59,7 +59,7 @@ const routes: RouteRecordRaw[] = [
                 name: 'Device',
                 meta: {
                     title: '设备管理',
-                    permiss: '6',
+                    permiss: '4',
                 },
                 component: () => import(/* webpackChunkName: "device" */ '../views/device.vue'),
             },
@@ -68,7 +68,7 @@ const routes: RouteRecordRaw[] = [
                 name: 'permission',
                 meta: {
                     title: '权限管理',
-                    permiss: '7',
+                    permiss: '5',
                 },
                 component: () => import(/* webpackChunkName: "permission" */ '../views/permission.vue'),
             },
@@ -77,7 +77,7 @@ const routes: RouteRecordRaw[] = [
                 name: 'settings',
                 meta: {
                     title: '系统设置',
-                    permiss: '8',
+                    permiss: '6',
                 },
                 component: () => import(/* webpackChunkName: "settings" */ '../views/settings.vue'),
             },

@@ -25,9 +25,12 @@
 					<div>
 						<span class="label">角色：</span>
 						<el-select v-model="role" @change="handleChange" style="width: 50%;">
-							<el-option label="管理员" value="admin"></el-option>
-							<el-option label="普通用户" value="user"></el-option>
-							<el-option label="超级管理员" value="superAdmin"></el-option>
+							<el-option
+							v-for="item in roleOptions"
+							:key="item.value"
+							:label="item.label"
+							:value="item.value"
+							/>
 						</el-select>
 					</div>
 					<div class="mgb20 tree-wrapper">
@@ -112,7 +115,21 @@ import { ElTree, ElMessageBox, ElMessage } from 'element-plus';
 import { usePermissStore } from '../store/permiss';
 import axios from 'axios';
 
-const role = ref<string>('admin');
+const role = ref<string>('operator');
+var roleOptions = ref([
+	{
+		value: "operator",
+		label: "普通用户",
+	},
+	{
+		value: "admin",
+		label: "管理员",
+	},
+	{
+		value: "super_admin",
+		label: "超级管理员",
+	}
+])
 
 interface Tree {
 	id: string;
@@ -122,60 +139,86 @@ interface Tree {
 
 const data: Tree[] = [
 	{
-		id: '2',
-		label: '任务创建',
-		children: [
-			{
-				id: '3',
-				label: '导入Excel'
-			},
-			{
-				id: '4',
-				label: '软件包上传'
-			}
-		]
+		id: '1',
+		label: '导入Excel'
 	},
 	{
-		id: '5',
+		id: '2',
+		label: '上传刷新包'
+	},
+	{
+		id: '3',
 		label: '任务管理'
 	},
 	{
-		id: '6',
+		id: '4',
 		label: '设备管理'
 	},
 	{
-		id: '7',
+		id: '5',
 		label: '权限管理'
 	},
 	{
-		id: '8',
+		id: '6',
 		label: '系统设置'
 	},
-	
 	
 ];
 
 const permiss = usePermissStore();
 
 // 获取当前权限
-const checkedKeys = ref<string[]>([]);
+var checkedKeys = ref<string[]>([]);
 const getPremission = () => {
 	checkedKeys.value = permiss.defaultList[role.value];
 };
 
 const changeSelectedRole = () => {
-	//todo 获取权限
+	//获取选择的权限并暂存
+	let temp = tree.value!.getCheckedNodes().map(node => node.id)
+	permiss.defaultList[role.value] = temp
 }
 
-getPremission();
+
 
 // 保存权限
 const tree = ref<InstanceType<typeof ElTree>>();
+var selectedPermission = {
+	"Import Excel": false,
+	"Upload Package": false,
+	"Task Management": false,
+	"Device Management": false,
+	"Permission Management": false,
+	"System Settings": false
+}
 const onSubmit = () => {
 	// 获取选中的权限
-	console.log(tree.value!.getCheckedKeys(false));
-
+	let temp = tree.value!.getCheckedNodes().map(node => node.id)
+	let i=0
+	while(i<temp.length){
+		switch(temp[i]){
+			case '1' : selectedPermission['Import Excel'] = true; break;
+			case '2' : selectedPermission['Upload Package'] = true; break;
+			case '3' : selectedPermission['Task Management'] = true; break;
+			case '4' : selectedPermission['Device Management'] = true; break;
+			case '5' : selectedPermission['Permission Management'] = true; break;
+			case '6' : selectedPermission['System Settings'] = true; break;
+		}
+		i++;	
+	}
+	let tempRole = role.value
+	let param = {
+		role_name: tempRole,
+		permissions: selectedPermission
+	}
 	//todo将权限保存
+	axios.post('/user/role/update', param)
+	.then(res => {
+		ElMessage.success('权限修改成功')
+	})
+	.catch(error => {
+		ElMessage.error(tempRole + '权限修改失败，请检查网络连接后重试')
+	})
 };
 
 var page = ref('first')
@@ -211,7 +254,6 @@ const getUserList = async () => {
 	}
 	
 }
-
 
 //修改用户信息###################################################
 var changeUserDialog = ref(false)
@@ -331,6 +373,7 @@ const resetPassword = (index: number) => {
 	})
 }
 
+getPremission();
 getUserList()
 </script>
 
