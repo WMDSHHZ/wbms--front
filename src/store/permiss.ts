@@ -43,7 +43,7 @@ export const usePermissStore = defineStore('permiss', {
 			permiss.defaultList.operator = temp
 		})
 		.catch(error => {
-			ElMessage.error('获取权限信息失败，将使用默认权限信息')
+			ElMessage.error('获取普通用户权限信息失败，将使用默认权限信息')
 		})
 
 		//获取管理员权限信息
@@ -71,7 +71,7 @@ export const usePermissStore = defineStore('permiss', {
 			permiss.defaultList.admin = temp
 		})
 		.catch(error => {
-			ElMessage.error('获取权限信息失败，将使用默认权限信息')
+			ElMessage.error('获取管理员权限信息失败，将使用默认权限信息')
 		})
 
 		//获取超级管理员权限信息
@@ -97,9 +97,10 @@ export const usePermissStore = defineStore('permiss', {
 				temp.push('6')
 			}
 			permiss.defaultList.super_admin = temp
+			console.log(permiss.defaultList.super_admin)
 		})
 		.catch(error => {
-			ElMessage.error('获取权限信息失败，将使用默认权限信息')
+			ElMessage.error('获取超级管理员权限信息失败，将使用默认权限信息')
 		})
 		
 		return permiss

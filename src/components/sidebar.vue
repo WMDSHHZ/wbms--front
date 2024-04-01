@@ -32,31 +32,31 @@ const items = [
         icon: 'upload',
         index: '/import',
         title: '任务创建',
-        permiss: '2',
+        permiss: '1',
     },
     {
         icon: 'DocumentCopy',
         index: '/task',
         title: '任务管理',
-        permiss: '5',
+        permiss: '3',
     },
     {
         icon: 'Setting',
         index: '/device',
         title: '设备管理',
-        permiss: '6',
+        permiss: '4',
     },
     {
         icon: 'lock',
         index: '/permission',
         title: '账号管理',
-        permiss: '7',
+        permiss: '5',
     },
     {
         icon: 'Setting',
         index: '/settings',
         title: '系统设置',
-        permiss: '8',
+        permiss: '6',
     },
 ];
 

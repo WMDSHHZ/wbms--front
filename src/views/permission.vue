@@ -211,7 +211,7 @@ const onSubmit = () => {
 		role_name: tempRole,
 		permissions: selectedPermission
 	}
-	//todo将权限保存
+	//将权限保存
 	axios.post('/user/role/update', param)
 	.then(res => {
 		ElMessage.success('权限修改成功')

@@ -124,10 +124,16 @@ const forward = () => {
 var title = ref()
 const createTask = () => {
     if(title.value != null && upload_file != null){
-        //todo 创建任务 数据库同步信息
-        ElMessage({
+        //创建任务 数据库同步信息+
+        axios.put('/big/task/create?topic=' + title.value)
+        .then(res => {
+            ElMessage({
             type: 'success',
             message: '任务创建成功'
+            })
+        })
+        .catch(error => {
+            ElMessage.error('任务创建失败，请稍后再试')
         })
     }else{
         if(upload_file != null){
