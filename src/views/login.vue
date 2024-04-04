@@ -23,7 +23,9 @@
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
-                    <el-button type="primary" @click="submitForm(login)">登录</el-button>
+                    <el-button type="primary" 
+                    v-loading.fullscreen.lock="loading"
+                    @click="submitForm(login)">登录</el-button>
                 </div>
                 <el-checkbox class="login-tips" v-model="checked" label="记住密码" size="large" />
             </el-form>
@@ -40,6 +42,9 @@ import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { Lock, User } from '@element-plus/icons-vue';
 import axios from 'axios';
+import { tr } from 'element-plus/es/locale';
+
+const loading = ref(false)
 
 interface LoginInfo {
     username: string;
@@ -71,6 +76,7 @@ const login = ref<FormInstance>();
 
 //登录校验
 const submitForm = (formEl: FormInstance | undefined) => {
+    loading.value = true    //显示等待加载组件
     if (!formEl) return;    //如果表单类型为undefined则返回
     formEl.validate((valid: boolean) => {
         if (valid) {
@@ -105,6 +111,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
                 })
                 //###########################################################
 
+                loading.value = false
                 router.push('/import');
                 if (checked.value) {
                     localStorage.setItem('login-param', JSON.stringify(param));
@@ -114,10 +121,12 @@ const submitForm = (formEl: FormInstance | undefined) => {
                 return true
             })
             .catch(error => {
+                loading.value = false
                 ElMessage.error('用户不存在，请检查用户名与密码')
                 return false
             })
-        } else {
+        }else {
+            loading.value = false
             ElMessage.error('登录失败')
             return false
         }

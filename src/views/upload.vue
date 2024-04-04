@@ -9,7 +9,7 @@
             <el-table-column prop="title" label="文件类型" width="200px"></el-table-column>
             <el-table-column label="回读信息填写">
                 <template #default="scope">
-                    <el-input :placeholder="getInfo(scope.$index)"></el-input> 
+                    <el-input :placeholder="getInfo(scope.$index)" v-model="infoList[scope.$index]"></el-input> 
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="140px">
@@ -26,7 +26,11 @@
 
         <div>
             <el-input placeholder="请输入主题" style="width: 90%" v-model="title"></el-input>
-            <el-button @click="createTask" type="success">创建任务</el-button>
+            <el-button 
+            @click="createTask" 
+            type="success"
+            v-loading.fullscreen.lock="createTaskLoading"
+            element-loading-text="创建任务中，请稍后">创建任务</el-button>
         </div>
     </div>
 </template>
@@ -75,12 +79,11 @@ const list = [
     }
 ]
 
-var infoList = ref([5])
+//回读信息列表
+var infoList = ref([])
 
 var upload_file, file_type
-const headers = {
-    'Content-Type': 'multipart/form-data'
-}
+
 const handle = (rawFile: any) => {
     upload_file = rawFile
 };
@@ -117,38 +120,45 @@ const getType = (index: number) => {
 //返回MAC地址导入页面
 const router = useRouter();
 const forward = () => {
-    router.go(-1)
+    router.push('/import')
 }
+
+const createTaskLoading = ref(false)
 
 //创建任务
 var title = ref()
 const createTask = () => {
     if(title.value != null && upload_file != null){
-        //创建任务 数据库同步信息+
+        //创建任务 数据库同步信息
+        createTaskLoading.value = true
         axios.put('/big/task/create?topic=' + title.value)
         .then(res => {
-            ElMessage({
-            type: 'success',
-            message: '任务创建成功'
-            })
+            ElMessage.success('任务创建成功')
+            createTaskLoading.value = false
+            initPage()
         })
         .catch(error => {
             ElMessage.error('任务创建失败，请稍后再试')
+            createTaskLoading.value = false
         })
     }else{
         if(upload_file != null){
-            ElMessage({
-                type: 'error',
-                message: '请输入主题'
-            })
+            ElMessage.error('请输入主题')
         }else{
-            ElMessage({
-                type: 'error',
-                message: '请先上传刷新包文件'
-            })
+            ElMessage.error('请先上传刷新包文件')
         }
     }
 }
+
+//任务创建成功后执行函数
+const initPage = () => {
+    infoList.value = [] //重置回读信息
+    title.value = ''    //重置标题信息
+    upload_file = null
+    sessionStorage.setItem('refresh', 'true')
+    forward()
+}
+
 </script>
 
 <style scoped>

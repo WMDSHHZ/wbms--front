@@ -1,6 +1,6 @@
 <template>
 	<div class="container">
-		<el-tabs v-model="message">
+		<el-tabs v-model="message" v-loading="taskLoading">
 			<el-tab-pane :label="`待审批任务(${taskList.unread.length})`" name="first">
 				<el-table :data="taskListForShow.unread" style="width: 100%" border>
 					<el-table-column prop="task_id" label="编号" width="180"></el-table-column>
@@ -99,7 +99,8 @@
 			v-model="infoDialog" 
 			width="90%" 
 			:modal="false" 
-			:draggable="true">
+			:draggable="true"
+			v-loading="taskDetailLoading">
 			<div class="selectContainer">
 				<el-space :spacer="spacer">
 					<span>筛选条件</span>
@@ -269,8 +270,6 @@
 					</el-table-column>
 				</el-table>
 			</el-dialog>
-
-
 		</div>
 	</div>
 </template>
@@ -281,6 +280,8 @@ import { ElDivider, ElMessage } from 'element-plus';
 import axios from 'axios';
 
 const message = ref('first');
+const taskLoading = ref(true)	//大任务列表加载页面
+const taskDetailLoading = ref(true)	//小任务列表加载页面
 var taskList = reactive({
 	unread:[],
 	pass:[],
@@ -723,6 +724,8 @@ const getTaskDetail = (index: number, type: string) => {
 		case 'pass': console.log(taskListForShow.pass);break;
 		case 'back': console.log(taskListForShow.back);break;
 	}
+
+	taskDetailLoading.value = false
 	
 }
 
@@ -770,9 +773,11 @@ const getTask = async () => {
 		handleCurrentChange('unread')
 		handleCurrentChange('pass')
 		handleCurrentChange('back')
+		taskLoading.value = false
 	})
 	.catch(error => {
 		ElMessage.error('获取任务失败！请检查网络连接或稍后重试！')
+		taskLoading.value = false
 	})
 
 }
@@ -810,12 +815,22 @@ const check = () => {
 					if(dataList[i].mac_address == macValue.value){
 						showDataList.push(dataList[i])
 					}
-				}else{
-					if(dataList[i].mac_address == macValue.value && 
-					dataList[i].update_time.slice(0,10) >= dateValue.value[0] && dataList[i].update_time.slice(0,10) <= dateValue.value[1]){
-						showDataList.push(dataList[i])
+				}else{		
+					//如果时间选项存在
+					//先判断mac地址是否为空
+					if(macValue.value == ''){
+						//若mac地址为空则根据时间筛选
+						if(dataList[i].update_time.slice(0,10) >= dateValue.value[0] && dataList[i].update_time.slice(0,10) <= dateValue.value[1]){
+							showDataList.push(dataList[i])
+						}
+					}else{
+						//否则根据两者筛选
+						if(dataList[i].update_time.slice(0,10) >= dateValue.value[0] && dataList[i].update_time.slice(0,10) <= dateValue.value[1] &&
+							dataList[i].mac_address == macValue.value){
+							showDataList.push(dataList[i])
+						}
 					}
-				}
+				}	
 			}
 
 			switch(t)

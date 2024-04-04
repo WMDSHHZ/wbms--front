@@ -9,8 +9,12 @@
                     :show-file-list="false"
                     :before-upload="beforeUpload"
                     :http-request="handleMany"
+                    v-loading.fullscreen.lock="importLoading"
+                    element-loading-text="数据导入中，请稍后"
                 >
-                    <el-button class="mr10" type="success">批量导入</el-button>
+                    <el-button 
+                    class="mr10" 
+                    type="success">批量导入</el-button>
                 </el-upload>
                 <el-link href="/template.xlsx" target="_blank">下载模板</el-link>
                 <el-button type="danger" @click="deleteData">清空数据</el-button>
@@ -20,7 +24,9 @@
                 <el-table-column prop="number" label="托号" width="200px" align="center"></el-table-column>
                 <el-table-column prop="MAC" label="MAC地址"></el-table-column>
             </el-table>
-            
+            <div v-if="showLengthinfoFlag">
+                一共有{{ length }}条数据，已展示{{ showLength }}条数据
+            </div>
         </div>
     </div>
 </template>
@@ -28,7 +34,7 @@
 <script setup lang="ts" name="import">
 import axios from 'axios';
 import { ElMessage, UploadProps } from 'element-plus';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import * as XLSX from 'xlsx';
 import { useRouter } from 'vue-router';
 
@@ -41,9 +47,11 @@ interface TableItem {
 }
 
 var tableData = ref<TableItem[]>([]);
+const importLoading = ref(false)
 
 var importList = ref<any>([]);
 const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
+    importLoading.value = true
     let param = new FormData();
     param.append("file",rawFile)
     param.append("file_type", "DEVICE_INFO")
@@ -51,9 +59,11 @@ const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
     axios.post('/file/input', param)
     .then(res => {
         ElMessage.success('上传成功')
+        importLoading.value = false
     })
     .catch(error => {
         ElMessage.error('上传失败')
+        importLoading.value = false
     })
     importList.value = await analysisExcel(rawFile);
     console.log(importList.value.length)
@@ -76,6 +86,9 @@ const analysisExcel = (file: any) => {
     });
 };
 
+var length = ref()
+var showLength = ref()
+var showLengthinfoFlag = ref(false)
 const handleMany = async () => {
     const list = importList.value.map((item: any, index: number) => {
         return {
@@ -91,18 +104,21 @@ const handleMany = async () => {
         for (let i = 0; i < 50; i++) {
             tableData.value.push(list[i]);
         }
+        showLength.value = 50
     } else {
         tableData.value.push(...list);
+        showLength.value = list.length
     }
 
-    console.log(tableData.value);
+    length = list.length
+    showLengthinfoFlag.value = true
       
 };
 
 
 const deleteData = () => {
     console.log(tableData.value)
-    tableData = ref<TableItem[]>([]);
+    tableData.value = []
     console.log(tableData.value)
 }
 
@@ -119,6 +135,17 @@ const next = () => {
     }
     
 }
+
+
+// 使onMounted来响应参数变化
+onMounted(() => {
+    let refresh = sessionStorage.getItem('refresh')
+  if (refresh == 'true') {
+    //清空数据
+    deleteData()
+  }
+});
+
 </script>
 
 <style scoped>
