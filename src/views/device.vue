@@ -6,7 +6,7 @@
                 <el-table-column label="操作">
                     <template #default="scope">
                         <div class="opreation">
-                            <el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>
+                            <!---<el-button size="small" @click="getDetail(scope.$index)" type="info" plain>详情</el-button>-->
                             <el-button size="small" @click="getTask(scope.$index)" type="info" plain>任务查看</el-button>
                         </div>
                     </template>
@@ -18,13 +18,14 @@
             <el-dialog v-model="infoDialog">
                 设备详情
             </el-dialog>
-
             <el-dialog v-model="taskInfoDialog">
-                <div v-if="taskList.length == null">
+                <div v-if="taskList.length == 0">
                     该设备空闲中
                 </div>
                 <el-table v-else :data="taskList">
-                    <el-table-column label="组件名称" prop="suite_number"></el-table-column>
+                    <el-table-column label="组件名称" prop="pallet_number"></el-table-column>
+                    <el-table-column label="扫描时间" prop="scan_time"></el-table-column>
+                    <el-table-column label="任务状态" prop="status"></el-table-column>
                 </el-table>
             </el-dialog>
         </div>
@@ -41,17 +42,7 @@ import { ref, reactive } from "vue";
 //获取设备列表
 var deviceList = ref([])
 var taskList = ref([]);
-/*
-const getDeviceList = async () => {
-  try {
-    const res = await axios.get('/controllers');
-    deviceList.value = res.data.controllerList;
-  } catch (error) {
-    ElMessage.error('无法获取设备信息，请检查网络连接')
-    console.error(error);
-  }
-}
-*/
+
 const getDeviceList = () => {
     axios.get('/controllers')
     .then(res => {
@@ -75,9 +66,7 @@ const getDetail = (index: number) => {
 var taskInfoDialog = ref(false)
 const getTask = (index: number) => {
     taskInfoDialog.value = true
-    console.log(deviceList.value[index].status)
     if(deviceList.value[index].status == 'working'){
-        //todo 任务相关待完善
         taskList.value = deviceList.value[index].tasks
     }else{
         taskList.value = []

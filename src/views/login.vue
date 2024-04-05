@@ -42,7 +42,6 @@ import { ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { Lock, User } from '@element-plus/icons-vue';
 import axios from 'axios';
-import { tr } from 'element-plus/es/locale';
 
 const loading = ref(false)
 

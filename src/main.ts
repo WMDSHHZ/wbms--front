@@ -7,6 +7,7 @@ import { usePermissStore } from './store/permiss';
 import 'element-plus/dist/index.css';
 import './assets/css/icon.css';
 import axios from "axios";
+import 'lib-flexible/flexible.js'
 
 const app = createApp(App);
 app.use(createPinia());
