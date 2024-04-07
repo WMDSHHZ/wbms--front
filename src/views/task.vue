@@ -5,7 +5,7 @@
 				<el-table :data="taskListForShow.unread" style="width: 100%" border>
 					<el-table-column prop="task_id" label="编号" width="180"></el-table-column>
 					<el-table-column prop="topic" label="主题"></el-table-column>
-					<el-table-column width="200" label="操作">
+					<el-table-column width="275px" label="操作">
 						<template #default="scope">
 							<div class="opreation">
 								<el-button size="small" @click="unreadToRead(scope.$index)" type="success" plain>通过</el-button>
@@ -119,8 +119,8 @@
 				<el-tabs v-model="page">
 					<el-tab-pane :label="`已完成(${taskStatus.finish})`" name="first">
 						<el-table :data="reflashDataForShow.finish" border class="table" style="width: 100%" >
-							<el-table-column prop="suite_number" label="托号"></el-table-column>
-							<el-table-column prop="mac_address" label="MAC地址"></el-table-column>
+							<el-table-column prop="pallet_number" label="托号"></el-table-column>
+							<!--
 							<el-table-column v-if="reflashDataForShow.type == 'pass'" label="版本号">
 								<el-table-column label="刷新前版本号">
 									<template #default="scope">
@@ -134,13 +134,14 @@
 								</el-table-column>
 						    </el-table-column>
 							<el-table-column v-else label="目标版本号"></el-table-column>
+							-->
 							<el-table-column prop="status" label="刷新状态"></el-table-column>
-							<el-table-column prop="update_time" label="刷新时间"></el-table-column>
-							<el-table-column v-if="reflashDataForShow.type == 'pass'" prop="device_id" label="执行任务设备编号"></el-table-column>
-							<el-table-column label="操作">
+							<el-table-column prop="scan_time" label="扫描时间"></el-table-column>
+							<el-table-column v-if="reflashDataForShow.type == 'pass'" prop="controller_id" label="执行任务设备编号"></el-table-column>
+							<el-table-column label="操作" width="100px">
 								<template #default="scope">
 									<div class="opreation">
-										<el-button size="small" @click="getInsideDetail(reflashDataForShow.finish[scope.$index].mac_address)" type="info" plain>详情</el-button>
+										<el-button size="small" @click="getInsideDetail(reflashDataForShow.finish[scope.$index].pallet_number)" type="info" plain>详情</el-button>
 									</div>
 								</template>
 							</el-table-column>
@@ -155,8 +156,8 @@
 					</el-tab-pane>
 					<el-tab-pane :label="`刷新中(${taskStatus.working})`" name="second">
 						<el-table :data="reflashDataForShow.working" border class="table" style="width: 100%" >
-							<el-table-column prop="suite_number" label="托号"></el-table-column>
-							<el-table-column prop="mac_address" label="MAC地址"></el-table-column>
+							<el-table-column prop="pallet_number" label="托号"></el-table-column>
+							<!--
 							<el-table-column v-if="reflashDataForShow.type == 'pass'" label="版本号">
 								<el-table-column label="刷新前版本号">
 									<template #default="scope">
@@ -170,13 +171,14 @@
 								</el-table-column>
 						    </el-table-column>
 							<el-table-column v-else label="目标版本号"></el-table-column>
+							-->
 							<el-table-column prop="status" label="刷新状态"></el-table-column>
-							<el-table-column prop="update_time" label="刷新时间"></el-table-column>
-							<el-table-column v-if="reflashDataForShow.type == 'pass'" prop="device_id" label="执行任务设备编号"></el-table-column>
-							<el-table-column label="操作">
+							<el-table-column prop="scan_time" label="刷新时间"></el-table-column>
+							<el-table-column v-if="reflashDataForShow.type == 'pass'" prop="controller_id" label="执行任务设备编号"></el-table-column>
+							<el-table-column label="操作" width="100px">
 								<template #default="scope">
 									<div class="opreation">
-										<el-button size="small" @click="getInsideDetail(reflashDataForShow.working[scope.$index].mac_address)" type="info" plain>详情</el-button>
+										<el-button size="small" @click="getInsideDetail(reflashDataForShow.working[scope.$index].pallet_number)" type="info" plain>详情</el-button>
 									</div>
 								</template>
 							</el-table-column>
@@ -191,8 +193,8 @@
 					</el-tab-pane>
 					<el-tab-pane :label="`刷新失败(${taskStatus.failed})`" name="third">
 						<el-table :data="reflashDataForShow.failed" border class="table" style="width: 100%" >
-							<el-table-column prop="suite_number" label="托号"></el-table-column>
-							<el-table-column prop="mac_address" label="MAC地址"></el-table-column>
+							<el-table-column prop="pallet_number" label="托号"></el-table-column>
+							<!--
 							<el-table-column v-if="reflashDataForShow.type == 'pass'" label="版本号">
 								<el-table-column label="刷新前版本号">
 									<template #default="scope">
@@ -206,13 +208,14 @@
 								</el-table-column>
 						    </el-table-column>
 							<el-table-column v-else label="目标版本号"></el-table-column>
+							-->
 							<el-table-column prop="status" label="刷新状态"></el-table-column>
-							<el-table-column prop="update_time" label="刷新时间"></el-table-column>
-							<el-table-column v-if="reflashDataForShow.type == 'pass'" prop="device_id" label="执行任务设备编号"></el-table-column>
-							<el-table-column label="操作">
+							<el-table-column prop="scan_time" label="刷新时间"></el-table-column>
+							<el-table-column v-if="reflashDataForShow.type == 'pass'" prop="controller_id" label="执行任务设备编号"></el-table-column>
+							<el-table-column label="操作" width="100px">
 								<template #default="scope">
 									<div class="opreation">
-										<el-button size="small" @click="getInsideDetail(reflashDataForShow.failed[scope.$index].mac_address)" type="info" plain>详情</el-button>
+										<el-button size="small" @click="getInsideDetail(reflashDataForShow.failed[scope.$index].pallet_number)" type="info" plain>详情</el-button>
 									</div>
 								</template>
 							</el-table-column>
@@ -234,7 +237,9 @@
 			width="80%" 
 			:modal="false" 
 			:draggable="true">
-				<el-table :data="reflashDetailData">
+				<el-table 
+				:data="reflashDetailData"
+				v-loading="taskInsideDetailLoading">
 					<el-table-column prop="mac_address" label="MAC地址"></el-table-column>
 					<el-table-column prop="module_number" label="模组编号"></el-table-column>
 					<el-table-column prop="product_number" label="产品编号"></el-table-column>
@@ -296,312 +301,12 @@ const spacer = h(ElDivider, { direction: 'vertical' })
 
 const page = ref('first')
 
-interface reflashInfo {
-	mac_address: string;
-    module_number: string;
-    product_number: string;
-    status: string;
-    suite_number: string;
-    trace_code: string;
-    update_time: string;
-    version_info: string;
-}
+var reflashDetailData = ref([])
 
-//var reflashData = ref<reflashInfo[]>([])
-var reflashDetailData = ref([
-	{
-		mac_address: "64F9C0000022BC9F",
-		module_number: "00FMEASY000004DBV0190513",
-		product_number: "1234811BS40644",
-		status: "finish",
-		suite_number: "BEV(1416)S311088",
-		trace_code: "NS23331MASY40513",
-		update_time: "2024-03-09 15:36:55",
-		version_info: {
-			BMS_CONTAINER: {
-			newcrc: "1827640944",
-			oldcrc: "1027640944"
-			},
-			FIRMWARE: {
-			newversion: "2.0.8.22",
-			oldversion: "2.0.8.10"
-			}
-		}
-	}
-])
 var reflashData = reactive({
-	finish: [
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9A",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		},
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "finish",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		}
-	],
-	working: [
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "working",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		}
-	],
-	failed: [
-		{
-			mac_address: "64F9C0000022BC9F",
-			module_number: "00FMEASY000004DBV0190513",
-			product_number: "1234811BS40644",
-			status: "failed",
-			suite_number: "BEV(1416)S311088",
-			trace_code: "NS23331MASY40513",
-			update_time: "2024-03-09 15:36:55",
-			version_info: {
-				BMS_CONTAINER: {
-				newcrc: "1827640944",
-				oldcrc: "1027640944"
-				},
-				FIRMWARE: {
-				newversion: "2.0.8.22",
-				oldversion: "2.0.8.10"
-				}
-			}
-		}
-	]
+	finish:[],
+	working:[],
+	failed:[],
 })
 
 var reflashDataForShow = reactive({
@@ -705,49 +410,78 @@ const passToStop = (index: number) => {
 //获取任务详情
 var infoDialog = ref(false)
 const getTaskDetail = (index: number, type: string) => {
+	taskDetailLoading.value = true	//开启加载页面
+	//重置刷新信息，防止重复请求
+	reflashData.finish = []
+	reflashData.working = []
+	reflashData.failed = []
+
 	infoDialog.value = true 	//唤出信息窗口
-	//todo 有点模糊，到时候等api下来了在考虑
+	let task_id
+
 	reflashDataForShow.type = type		//表示目前展示的信息是哪个tab页面下的：未审批，已审批或已驳回
-	reflashDataForShow.finish = reflashData.finish
-	reflashDataForShow.working = reflashData.working
-	reflashDataForShow.failed = reflashData.failed
 
-	taskStatus.finish = reflashData.finish.length
-	taskStatus.working = reflashData.working.length
-	taskStatus.failed = reflashData.failed.length
-
-	//todo 待完善
 	switch (type) {
-		case 'unread': 
-			console.log(taskListForShow.unread[index].task_id)
-			break;
-		case 'pass': console.log(taskListForShow.pass);break;
+		case 'unread': task_id = taskListForShow.unread[index].task_id;break;
+		case 'pass': task_id = taskListForShow.pass[index].task_id;break;
 		case 'back': console.log(taskListForShow.back);break;
 	}
 
-	taskDetailLoading.value = false
+	axios.get('/big/task/info?task_id=' + task_id)
+	.then(res => {
+		let temp = res.data.controller_tasks
+
+		for(let i=0;i<temp.length;i++){
+			if(temp[i].status == 'error'){
+				//刷新失败的小任务
+			}else if(temp[i].status == 'completed'){
+				//已完成小任务
+				reflashData.finish.push(temp[i])
+			}else {
+				//刷新中的小任务
+				reflashData.working.push(temp[i])
+			}
+		}
+
+		handleDetailCurrentChange('finish')
+		handleDetailCurrentChange('working')
+		handleDetailCurrentChange('failed')
+
+		taskStatus.finish = reflashData.finish.length
+		taskStatus.working = reflashData.working.length
+		taskStatus.failed = reflashData.failed.length
+
+		ElMessage.success('获取详细信息成功！')
+		taskDetailLoading.value = false	//等待加载页面解除
+	})
+	.catch(error => {
+		ElMessage.error('获取详细信息失败，请检查网络连接或刷新后重试！')
+		taskDetailLoading.value = false	//等待加载页面解除
+	})
+
+	
 	
 }
 
 //获取任务更加详情信息
 var insideInfoDialog = ref(false)
+var taskInsideDetailLoading = ref(true)
 const getInsideDetail = (id: string) => {
+	taskInsideDetailLoading.value = true	//开启加载页面
+	//重置小任务详情，防止重复
+	reflashDetailData.value = []
+
 	insideInfoDialog.value = true
-	/*
-	axios.get('/device/detailedInfo' + id)
+	axios.get('/device/detailedInfo?pallet_number=' + id)
 	.then(res => {
-		
-		console.log(res)
+		ElMessage.success('获取刷新详细记录成功')
+		reflashDetailData.value = res.data.data
+		taskInsideDetailLoading.value = false
 	})
 	.catch(error => {
-		ElMessage({
-			type: 'error',
-			message: '获取刷新详细记录失败，请检查网络连接或稍后重试'
-		})
+		ElMessage.error('获取刷新详细记录失败，请检查网络连接或稍后重试'!)
+		taskInsideDetailLoading.value = false
 	})
-	*/
-	
-	console.log(id)
 }
 
 //全部通过
@@ -926,7 +660,7 @@ const handleDetailCurrentChange = (type: string) => {
 		working:[],
 		failed:[]
 	}
-	if(dateValue.value.length == 0 && macValue.value == ''){
+	if(dateValue.value.length == 0 && (macValue.value == '' || macValue.value == undefined)){
 		//没有筛选信息，show数组信息应从原始数组中获取
 		tempList = reflashData
 	}else{
@@ -984,4 +718,5 @@ const handleDetailCurrentChange = (type: string) => {
 .selectContainer{
 	margin-bottom: 10px;
 }
+
 </style>
