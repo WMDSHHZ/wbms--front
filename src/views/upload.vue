@@ -2,17 +2,25 @@
     <div class="container">
         <div class="content-title">
             <span>上传刷新软件包</span>
-            <el-button @click="forward" type="success">上一步</el-button>
+            <el-button 
+            @click="forward" 
+            type="success"
+            style="margin-left: 20px;">上一步</el-button>
         </div>
 
-        <el-table :data="list">
-            <el-table-column prop="title" label="文件类型" width="200px"></el-table-column>
+        <el-table 
+        :data="list"
+        border>
+            <el-table-column 
+            prop="title" 
+            label="文件类型" 
+            width="270px"/>
             <el-table-column label="回读信息填写">
                 <template #default="scope">
                     <el-input :placeholder="getInfo(scope.$index)" v-model="infoList[scope.$index]"></el-input> 
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="140px">
+            <el-table-column label="操作" width="200px">
                 <template #default="scope">
                     <el-upload
                         :on-change="handle"
@@ -24,13 +32,17 @@
             </el-table-column>
         </el-table>
 
-        <div>
-            <el-input placeholder="请输入主题" style="width: 90%" v-model="title"></el-input>
+        <div class="titleContainer">
+            <el-text>主题：</el-text>
+            <el-input placeholder="请输入主题"
+            v-model="title"
+            style="width: 80%;"/>
             <el-button 
             @click="createTask" 
             type="success"
             v-loading.fullscreen.lock="createTaskLoading"
-            element-loading-text="创建任务中，请稍后">创建任务</el-button>
+            element-loading-text="创建任务中，请稍后"
+            style="width: 200px;">创建任务</el-button>
         </div>
     </div>
 </template>
@@ -169,26 +181,9 @@ const initPage = () => {
     font-size: 22px;
     color: #1f2f3d;
 }
-.upload-demo {
-    width: 360px;
-}
-
-.upload-main-area-1{
-    display: flex;
+.titleContainer{
+    display: flex; 
     justify-content: space-between;
-}
-
-.upload-main-area-2{
-    display: flex;
-    justify-content: space-between;
-}
-
-.upload-sub-area{
-    margin-top: 20px;
-    align-content: center;
-}
-
-.upload-name{
-
+    margin-top: 15px;
 }
 </style>

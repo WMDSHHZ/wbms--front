@@ -21,7 +21,7 @@
                 <el-button @click="next">下一步</el-button>
             </div>
             <el-table :data="tableData" border class="table" header-cell-class-name="table-header" show-overflow-tooltip="true">
-                <el-table-column prop="number" label="托号" width="200px" align="center"></el-table-column>
+                <el-table-column prop="number" label="托号" align="center"></el-table-column>
                 <el-table-column prop="MAC" label="MAC地址"></el-table-column>
             </el-table>
             <div v-if="showLengthinfoFlag">

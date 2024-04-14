@@ -281,7 +281,7 @@
 
 <script setup lang="ts" name="tabs">
 import { ref, reactive, h, onMounted, onBeforeMount } from 'vue';
-import { ElDivider, ElMessage } from 'element-plus';
+import { ElDivider, ElMessage, ElNotification } from 'element-plus';
 import axios from 'axios';
 
 const message = ref('first');
@@ -322,6 +322,7 @@ var taskStatus = reactive({
 	failed: 0
 })
 
+var assignFrom	//记录分配设备请求是从驳回列表还是待处理列表
 var deviceList = ref([])
 //获取设备列表
 const getDeviceList = () => {
@@ -337,6 +338,7 @@ const getDeviceList = () => {
 		}
 	})
 	.catch(error => {
+		console.log(error)
 		ElMessage.error('获取设备信息失败，请检查网络连接或刷新页面')
 	})
 }
@@ -345,30 +347,37 @@ var allocateTaskDialog = ref(false)
 var readIndex = 0	//保存所选任务在数组中的位置，以便分配设备后将其从数组中删除
 const unreadToRead = (index: number) => {
 	allocateTaskDialog.value = true
-	readIndex = index		
+	readIndex = index	
+	assignFrom = 'unread'	
 };
 
 var selectedDeviceList = ref([])
 var selected = false
 //设备分配
 const handleAllocatedChange = () => {
-	let item = taskList.unread.splice(readIndex, 1);	//用于临时存储被选中的任务
-	console.log(item)
+	let item	//用于临时存储被选中的任务
+	if(assignFrom == 'unread'){
+		item = taskListForShow.unread[readIndex];	
+	}else{
+		item = taskListForShow.back[readIndex]
+	}
+	
 	if(selectedDeviceList.value.length == 0 && selected){
 		ElMessage({
 			type: 'error',
 			message: '未选择设备'
 		})
 	}else if(selected){
+		taskLoading.value = true //打开等待加载界面
 		let param = {
-			task_id : item[0].task_id,
+			task_id : item.task_id,
 			device_ids : selectedDeviceList.value
 		}
 		console.log(param)
 		axios.post('/big/task/assign_devices', param)
 		.then(res => {
-			ElMessage.success('设备分配成功！')
-			//更改本地设备状态
+			//更改本地设备状态	todo待测试
+			console.log(selectedDeviceList.value)
 			for(let i=0;i<selectedDeviceList.value.length;i++){
 				for(let j=0;j<deviceList.value.length;j++){
 					if(selectedDeviceList.value[i] == deviceList.value[j].id){
@@ -376,35 +385,104 @@ const handleAllocatedChange = () => {
 					}
 				}
 			}
-			//更改任务状态
-			taskList.pass = item.concat(taskList.pass);
-			taskListForShow.pass = item.concat(taskListForShow.pass)
-			//刷新页面解决99%问题
-			location.reload()
+			//更改任务状态 todo待测试
+			let statusChangeParam = {
+				task_id : item.task_id,
+				new_status : 'approved'
+			}
+			axios.post('/big/task/update_status', statusChangeParam)
+			.then(res => {
+				let index	//找到被选中任务的位置
+				if(assignFrom == 'unread'){
+					index = taskList.unread.indexOf(item)	
+					if (index !== -1) {
+						taskList.unread.splice(index, 1);
+						taskList.pass.push(item);
+					}
+					//更新展示数组
+					handleCurrentChange('unread')	
+					handleCurrentChange('pass')
+				}else{
+					index = taskList.back.indexOf(item)	
+					if (index !== -1) {
+						taskList.back.splice(index, 1);
+						taskList.pass.push(item);
+					}
+					//更新展示数组
+					handleCurrentChange('back')	
+					handleCurrentChange('pass')
+				}
+
+
+				taskLoading.value = false 
+				ElNotification.success('任务状态更改成功！任务已通过')
+				
+			})
+			.catch(error => {
+				taskLoading.value = false 
+				ElNotification.error('任务状态更改失败,请检查网络连接或稍后重试！')
+			})
+			selectedDeviceList = ref([])	//要确保设备被分配了任务后才能清空选择数组！
+			ElMessage.success('设备分配成功！')
 		})
 		.catch(error => {
+			taskLoading.value = false //关闭等待加载页面
 			ElMessage.error('设备分配失败，请稍后再试')
 		})	
 	}
-	selectedDeviceList = ref([])
 }
 
 //待处理->驳回
 const readToBack = (index: number) => {
-	let item = taskList.unread.splice(index, 1)
-	taskList.back = item.concat(taskList.back)
+	taskLoading.value = true
+
+	let item = taskListForShow.unread[index]
+	let tempIndex = taskList.unread.indexOf(item)
+	if(tempIndex !== -1){
+		taskList.unread.splice(tempIndex, 1)
+		taskList.back.push(item)
+	}
+
+	let param = {
+		task_id : item.task_id,
+		new_status : 'rejected'
+	}
+	axios.post('/big/task/update_status', param)
+	.then(res => {
+		handleCurrentChange('unread')
+		handleCurrentChange('back')
+		taskLoading.value = false
+		ElNotification.success('任务状态更改成功！任务已驳回')
+	})
+	.catch(error => {
+		taskLoading.value = false
+		ElNotification.error('任务状态更改失败,请检查网络连接或稍后重试！')
+	})
+
 }
 
 //驳回->通过
 const backToPass = (index: number) => {
-	let item = taskList.back.splice(index, 1)
-	taskList.pass = item.concat(taskList.pass)
+	allocateTaskDialog.value = true
+	readIndex = index
+	assignFrom = 'back'
 }
 
 //停止处理该任务
 const passToStop = (index: number) => {
-	taskList.pass.splice(index, 1)
-	//todo 待完善
+	let item = taskListForShow.pass[index]
+	let param = {
+		task_id : item.task_id,
+		new_status : 'stopped'
+	}
+	axios.post('/big/task/update_status', param)
+	.then(res => {
+		ElNotification.success('任务状态更改成功！任务已停止')
+	})
+	.catch(error => {
+		ElNotification.error('任务状态更改失败,请检查网络连接或稍后重试！')
+	})
+	
 }
 
 //获取任务详情
