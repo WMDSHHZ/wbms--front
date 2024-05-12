@@ -5,7 +5,7 @@
 				<el-table :data="userList">
 					<el-table-column prop="username" label="用户名"></el-table-column>
 					<el-table-column prop="role" label="所属用户组"></el-table-column>
-					<el-table-column label="操作" width="280px">
+					<el-table-column label="操作" width="400px">
 						<template #default="scope">
 							<el-button type="primary" @click="changeUser(scope.$index)">修改</el-button>
 							<el-button type="danger" @click="deleteUser(scope.$index)">删除</el-button>

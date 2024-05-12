@@ -16,7 +16,7 @@
                     class="mr10" 
                     type="success">批量导入</el-button>
                 </el-upload>
-                <el-link href="/template.xlsx" target="_blank">下载模板</el-link>
+                <el-link href="/template.xlsx" target="_blank" class="link">下载模板</el-link>
                 <el-button type="danger" @click="deleteData">清空数据</el-button>
                 <el-button @click="next">下一步</el-button>
             </div>
@@ -54,7 +54,7 @@ const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
     importLoading.value = true
     let param = new FormData();
     param.append("file",rawFile)
-    param.append("file_type", "DEVICE_INFO")
+    param.append("file_type", "csv")
     
     axios.post('/file/input', param)
     .then(res => {
@@ -159,6 +159,9 @@ onMounted(() => {
     font-size: 14px;
 }
 .mr10 {
+    margin-right: 10px;
+}
+.link{
     margin-right: 10px;
 }
 </style>

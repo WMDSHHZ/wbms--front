@@ -12,9 +12,11 @@ import 'lib-flexible/flexible.js'
 const app = createApp(App);
 app.use(createPinia());
 app.use(router);
-axios.defaults.baseURL = "http://localhost:5000";
+//axios.defaults.baseURL = "http://localhost:5000";
+axios.defaults.baseURL = "http://122.51.105.149:5000";
 app.config.globalProperties.$axios = axios;
-app.config.globalProperties.$target = "http://localhost:5000";
+//app.config.globalProperties.$target = "http://localhost:5000";
+app.config.globalProperties.$target = "http://122.51.105.149:5000";
 app.config.globalProperties.$config = {
   headers: {
     "Content-Type": "application/json;charset=utf-8",

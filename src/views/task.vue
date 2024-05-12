@@ -22,9 +22,10 @@
 				:total="taskList.unread.length"
 				@current-change="handleCurrentChange('unread')"
 				/>
+				<!--
 				<div class="handle-row">
 					<el-button type="primary" @click="readAll">全部通过</el-button>
-				</div>
+				</div>-->
 			</el-tab-pane>
 			<el-tab-pane :label="`已审批任务(${taskList.pass.length})`" name="second">
 				<template v-if="message === 'second'">
@@ -280,7 +281,7 @@
 </template>
 
 <script setup lang="ts" name="tabs">
-import { ref, reactive, h, onMounted, onBeforeMount } from 'vue';
+import { ref, reactive, h,  onBeforeMount } from 'vue';
 import { ElDivider, ElMessage, ElNotification } from 'element-plus';
 import axios from 'axios';
 
@@ -329,6 +330,7 @@ const getDeviceList = () => {
 	axios.get('/controllers')
 	.then(res => {
 		deviceList.value = res.data.controllerList
+		/*
 		for(let i=0;i<deviceList.value.length;i++){
 			if(deviceList.value[i].status == 'idle'){
 				deviceList.value[i].status = true
@@ -336,6 +338,7 @@ const getDeviceList = () => {
 				deviceList.value[i].status = false
 			}
 		}
+		*/
 	})
 	.catch(error => {
 		console.log(error)
@@ -376,7 +379,8 @@ const handleAllocatedChange = () => {
 		console.log(param)
 		axios.post('/big/task/assign_devices', param)
 		.then(res => {
-			//更改本地设备状态	todo待测试
+			/*
+			//更改本地设备状态
 			console.log(selectedDeviceList.value)
 			for(let i=0;i<selectedDeviceList.value.length;i++){
 				for(let j=0;j<deviceList.value.length;j++){
@@ -385,6 +389,7 @@ const handleAllocatedChange = () => {
 					}
 				}
 			}
+			*/
 			//更改任务状态 todo待测试
 			let statusChangeParam = {
 				task_id : item.task_id,
