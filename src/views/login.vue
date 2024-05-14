@@ -4,9 +4,13 @@
             <div class="ms-title">电池刷新管理系统</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
-                    <el-input v-model="param.username" placeholder="请输入用户名">
+                    <el-input 
+                    v-model="param.username" 
+                    placeholder="请输入用户名" 
+                    tabindex="1"
+                    ref="usernameInput">
                         <template #prepend>
-                            <el-button :icon="User"></el-button>
+                            <el-button :icon="User" tabindex="-1"></el-button>
                         </template>
                     </el-input>
                 </el-form-item>
@@ -16,16 +20,20 @@
                         placeholder="请输入密码"
                         v-model="param.password"
                         @keyup.enter="submitForm(login)"
+                        tabindex="2"
+                        ref="passwordInput"
                     >
                         <template #prepend>
-                            <el-button :icon="Lock"></el-button>
+                            <el-button :icon="Lock" tabindex="-2"></el-button>
                         </template>
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
                     <el-button type="primary" 
                     v-loading.fullscreen.lock="loading"
-                    @click="submitForm(login)">登录</el-button>
+                    @click="submitForm(login)"
+                    tabindex="3"
+                    ref="loginButton">登录</el-button>
                 </div>
                 <el-checkbox class="login-tips" v-model="checked" label="记住密码" size="large" />
             </el-form>
@@ -34,11 +42,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, provide, onMounted, onUnmounted } from 'vue';
 import { useTagsStore } from '../store/tags';
 import { usePermissStore } from '../store/permiss';
 import { useRouter } from 'vue-router';
-import { ElMessage } from 'element-plus';
+import { ElInput, ElMessage } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import { Lock, User } from '@element-plus/icons-vue';
 import axios from 'axios';
@@ -73,13 +81,13 @@ const rules: FormRules = {
 const permiss = usePermissStore();
 const login = ref<FormInstance>();
 
+const count = ref(0)
 //登录校验
 const submitForm = (formEl: FormInstance | undefined) => {
     loading.value = true    //显示等待加载组件
     if (!formEl) return;    //如果表单类型为undefined则返回
     formEl.validate((valid: boolean) => {
         if (valid) {
-
             let user = {
                 "username": param.username,
                 "password": param.password
@@ -99,18 +107,20 @@ const submitForm = (formEl: FormInstance | undefined) => {
                     sessionStorage.setItem('role', role)
                     const keys = permiss.defaultList[role];
                     permiss.handleSet(keys);
-                    localStorage.setItem('ms_keys', JSON.stringify(keys));
+                    localStorage.setItem('ms_keys', JSON.stringify(keys))
                 })
                 .catch(error => {
                     console.log(error)
                     ElMessage.warning('验证失败,请检查网络连接,当前权限默认为普通用户')
                     const keys = permiss.defaultList['operator']
                     permiss.handleSet(keys);
-                    localStorage.setItem('ms_keys', JSON.stringify(keys));
+                    localStorage.setItem('ms_keys', JSON.stringify(keys))
                 })
                 //###########################################################
 
                 loading.value = false
+                provide('count', count.value)
+                count.value++
                 router.push('/import');
                 if (checked.value) {
                     localStorage.setItem('login-param', JSON.stringify(param));

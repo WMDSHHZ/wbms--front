@@ -475,6 +475,7 @@ const backToPass = (index: number) => {
 
 //停止处理该任务
 const passToStop = (index: number) => {
+	taskLoading.value = true
 	let item = taskListForShow.pass[index]
 	let param = {
 		task_id : item.task_id,
@@ -482,9 +483,11 @@ const passToStop = (index: number) => {
 	}
 	axios.post('/big/task/update_status', param)
 	.then(res => {
+		taskLoading.value = false
 		ElNotification.success('任务状态更改成功！任务已停止')
 	})
 	.catch(error => {
+		taskLoading.value = false
 		ElNotification.error('任务状态更改失败,请检查网络连接或稍后重试！')
 	})
 	
@@ -567,12 +570,6 @@ const getInsideDetail = (id: string) => {
 	})
 }
 
-//全部通过
-const readAll = () => {
-	let item = taskList.unread.splice(0,taskList.unread.length)
-	taskList.pass = item.concat(taskList.pass);
-}
-
 //获取任务列表
 const getTask = async () => {
 	axios.get('/big/tasks')
@@ -581,7 +578,7 @@ const getTask = async () => {
 		for(let i=0;i<res.data.length;i++){
 			if(res.data[i].status == 'pending_approval'){
 				taskList.unread.push(res.data[i])
-			}else if(res.data[i].status == 'approved'){
+			}else if(res.data[i].status == 'approved' || res.data[i].status == 'stopped'){
 				taskList.pass.push(res.data[i])
 			}else{
 				taskList.back.push(res.data[i])

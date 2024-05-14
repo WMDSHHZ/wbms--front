@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<el-tabs v-model="page">
+		<el-tabs v-model="page" v-loading="creatLoading">
 			<el-tab-pane name="first" label="账号管理">
 				<el-table :data="userList">
 					<el-table-column prop="username" label="用户名"></el-table-column>
@@ -114,6 +114,7 @@ import { reactive, ref } from 'vue';
 import { ElTree, ElMessageBox, ElMessage } from 'element-plus';
 import { usePermissStore } from '../store/permiss';
 import axios from 'axios';
+import { tr } from 'element-plus/es/locale';
 
 const role = ref<string>('operator');
 var roleOptions = ref([
@@ -344,17 +345,27 @@ var createUserForm = reactive({
 	role: ''
 })
 var createUserDialog = ref(false)
+const creatLoading = ref(false)
 const submitCreate = () => {
-	console.log(createUserForm)
-	//todo 可以添加一个等待样式
-	axios.post('/user/add', createUserForm)
-	.then(res => {
-		ElMessage.success('创建成功')
-	})
-	.catch(error => {
-		ElMessage.error('创建失败，请检查网络连接')
-	})
-	createUserDialog.value = false
+	if(createUserForm.username == null || createUserForm.username == '' || createUserForm.username == undefined){
+		ElMessage.error('用户名不能为空')
+	}else if(createUserForm.password == null || createUserForm.password == '' || createUserForm.password == undefined){
+		ElMessage.error('密码不能为空')
+	}else if (createUserForm.role == null || createUserForm.role == '' || createUserForm.role == undefined){
+		ElMessage.error('请选择用户组')
+	}else {
+		creatLoading.value = true
+		axios.post('/user/add', createUserForm)
+		.then(res => {
+			ElMessage.success('创建成功')
+			initCrearUserForm()
+		})
+		.catch(error => {
+			ElMessage.error('创建失败，请检查网络连接')
+			initCrearUserForm()
+		})
+		createUserDialog.value = false
+	}
 }
 
 //重置密码
@@ -371,6 +382,12 @@ const resetPassword = (index: number) => {
 	.catch(error => {
 		ElMessage.error('密码重置失败，请检查网络连接或稍后再试')
 	})
+}
+
+const initCrearUserForm = () => {
+	createUserForm.username = ''
+	createUserForm.password = ''
+	createUserForm.role = ''
 }
 
 getPremission();

@@ -140,7 +140,7 @@ const createTaskLoading = ref(false)
 //创建任务
 var title = ref()
 const createTask = () => {
-    if(title.value != null && upload_file != null){
+    if(title.value != (null || '' || undefined) && upload_file != null){
         //创建任务 数据库同步信息
         createTaskLoading.value = true
         axios.put('/big/task/create?topic=' + title.value)

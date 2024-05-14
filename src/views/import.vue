@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div :key="key">
         <div class="container">
             <div class="handle-box">
                 <el-upload
@@ -34,7 +34,7 @@
 <script setup lang="ts" name="import">
 import axios from 'axios';
 import { ElMessage, UploadProps } from 'element-plus';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import * as XLSX from 'xlsx';
 import { useRouter } from 'vue-router';
 
@@ -54,7 +54,7 @@ const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
     importLoading.value = true
     let param = new FormData();
     param.append("file",rawFile)
-    param.append("file_type", "csv")
+    param.append("file_type", "DEVICE_INFO")
     
     axios.post('/file/input', param)
     .then(res => {
@@ -117,9 +117,8 @@ const handleMany = async () => {
 
 
 const deleteData = () => {
-    console.log(tableData.value)
     tableData.value = []
-    console.log(tableData.value)
+    showLengthinfoFlag.value = false
 }
 
 const router = useRouter();
@@ -136,14 +135,17 @@ const next = () => {
     
 }
 
+const key = ref(0)
 
 // 使onMounted来响应参数变化
 onMounted(() => {
+    key.value = inject('count', 0)
+    console.log(key.value)
     let refresh = sessionStorage.getItem('refresh')
-  if (refresh == 'true') {
-    //清空数据
-    deleteData()
-  }
+    if (refresh == 'true') {
+        //清空数据
+        deleteData()
+    }
 });
 
 </script>
