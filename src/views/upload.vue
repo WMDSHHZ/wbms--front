@@ -41,7 +41,7 @@
                 <el-upload
                 :limit="1"
                 :file-list="upload_file"
-                action="http://localhost:5000/file/input"
+                action="http://122.51.105.149:5000/file/input"
                 :data="{ file_type: info.type }"
                 :on-error="handleUploadError"
                 :on-success="handleUploadSuccess"
@@ -100,7 +100,7 @@
                 <el-upload
                 :limit="1"
                 :file-list="upload_file"
-                action="http://localhost:5000/file/input"
+                action="http://122.51.105.149:5000/file/input"
                 :data="{ file_type: info.type }"
                 :on-error="handleUploadError"
                 :on-success="handleUploadSuccess"

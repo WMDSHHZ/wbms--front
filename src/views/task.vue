@@ -495,15 +495,28 @@ const passToStop = (index: number) => {
 	
 }
 
+var tempId	//用于暂时存储任务id便于导出日志的命名
 //导出任务数据
 const exportTask = (index: number) => {
-	axios.get('/big/task/report?task_id=' + taskListForShow.pass[index].task_id)
-	.then(res => {
-		ElNotification.success('导出成功！')
-	})
-	.catch(error => {
-		ElNotification.error('导出失败！请检查网络连接或稍后再试')
-	})
+	tempId = taskListForShow.pass[index].task_id
+    axios({
+        url: `/big/task/report?task_id=${tempId}`,
+        method: 'GET',
+        responseType: 'blob', // 确保以Blob形式接收文件数据
+    }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${tempId}.xlsx`); // 假设下载的是PDF文件，可以根据实际情况更改文件名和扩展名
+        document.body.appendChild(link);
+        link.click();
+        link.remove();  // 清理DOM
+        window.URL.revokeObjectURL(url); // 释放Blob URL
+        ElNotification.success('导出成功！');
+    }).catch((error) => {
+        console.error('Export failed:', error);
+        ElNotification.error('导出失败！请检查网络连接或稍后再试');
+    });
 }
 
 //获取任务详情

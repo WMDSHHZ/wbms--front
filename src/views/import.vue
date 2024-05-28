@@ -4,7 +4,6 @@
             <div class="handle-box">
                 <el-upload
                     action="#"
-                    :limit="1"
                     accept=".xlsx, .xls, .csv"
                     :show-file-list="false"
                     :before-upload="beforeUpload"
@@ -33,7 +32,7 @@
 
 <script setup lang="ts" name="import">
 import axios from 'axios';
-import { ElMessage, UploadProps } from 'element-plus';
+import { ElMessage, ElNotification, UploadProps } from 'element-plus';
 import { ref, onMounted, inject } from 'vue';
 import * as XLSX from 'xlsx';
 import { useRouter } from 'vue-router';
@@ -48,26 +47,32 @@ interface TableItem {
 
 var tableData = ref<TableItem[]>([]);
 const importLoading = ref(false)
-
+var count=0 //用于标识上传文件数，手动控制文件数限制为1
 var importList = ref<any>([]);
 const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
-    importLoading.value = true
-    let param = new FormData();
-    param.append("file",rawFile)
-    param.append("file_type", "DEVICE_INFO")
+    if(count==0){
+        count++
+        importLoading.value = true
+        let param = new FormData();
+        param.append("file",rawFile)
+        param.append("file_type", "DEVICE_INFO")
+        
+        axios.post('/file/input', param)
+        .then(res => {
+            ElMessage.success('上传成功')
+            importLoading.value = false
+        })
+        .catch(error => {
+            ElMessage.error('上传失败')
+            importLoading.value = false
+        })
+        importList.value = await analysisExcel(rawFile);
+        console.log(importList.value.length)
+        return true;
+    }else{
+        ElNotification.error('最多只能上传一个MAC文件')
+    }
     
-    axios.post('/file/input', param)
-    .then(res => {
-        ElMessage.success('上传成功')
-        importLoading.value = false
-    })
-    .catch(error => {
-        ElMessage.error('上传失败')
-        importLoading.value = false
-    })
-    importList.value = await analysisExcel(rawFile);
-    console.log(importList.value.length)
-    return true;
 };
 const analysisExcel = (file: any) => {
     return new Promise(function (resolve, reject) {
@@ -92,10 +97,10 @@ var showLengthinfoFlag = ref(false)
 const handleMany = async () => {
     const list = importList.value.map((item: any, index: number) => {
         return {
-            number: item['套号'],
+            number: item['pallet_number'],
             MAC: item['MAC'],
             PN: item['PN'],
-            "模组号": item['模组号'],
+            "模组号": item['module'],
             traceCode: item['Trace code']
         };
     });
@@ -119,6 +124,7 @@ const handleMany = async () => {
 const deleteData = () => {
     tableData.value = []
     showLengthinfoFlag.value = false
+    count--
 }
 
 const router = useRouter();
@@ -142,6 +148,7 @@ onMounted(() => {
     key.value = inject('count', 0)
     console.log(key.value)
     let refresh = sessionStorage.getItem('refresh')
+    console.log(refresh)
     if (refresh == 'true') {
         //清空数据
         deleteData()
