@@ -5,7 +5,7 @@
                 <el-upload
                     action="#"
                     :limit="1"
-                    accept=".xlsx, .xls"
+                    accept=".xlsx, .xls, .csv"
                     :show-file-list="false"
                     :before-upload="beforeUpload"
                     :http-request="handleMany"

@@ -32,11 +32,13 @@
 					<el-table :data="taskListForShow.pass" style="width: 100%" border>
 						<el-table-column prop="task_id" label="编号" width="180"></el-table-column>
 						<el-table-column prop="topic" label="主题"></el-table-column>
-						<el-table-column width="200" label="操作">
+						<el-table-column prop="status" label="任务状态" width="180"></el-table-column>
+						<el-table-column width="275px" label="操作">
 							<template #default="scope">
 								<div class="opreation">
 									<el-button type="danger" size="small" @click="passToStop(scope.$index)" plain>停止</el-button>
 									<el-button size="small" @click="getTaskDetail(scope.$index,'pass')" type="info" plain>详情</el-button>
+									<el-button size="small" @click="exportTask(scope.$index)" type="success" plain>导出</el-button>
 								</div>
 							</template>
 						</el-table-column>
@@ -493,6 +495,17 @@ const passToStop = (index: number) => {
 	
 }
 
+//导出任务数据
+const exportTask = (index: number) => {
+	axios.get('/big/task/report?task_id=' + taskListForShow.pass[index].task_id)
+	.then(res => {
+		ElNotification.success('导出成功！')
+	})
+	.catch(error => {
+		ElNotification.error('导出失败！请检查网络连接或稍后再试')
+	})
+}
+
 //获取任务详情
 var infoDialog = ref(false)
 const getTaskDetail = (index: number, type: string) => {
@@ -510,9 +523,10 @@ const getTaskDetail = (index: number, type: string) => {
 	switch (type) {
 		case 'unread': task_id = taskListForShow.unread[index].task_id;break;
 		case 'pass': task_id = taskListForShow.pass[index].task_id;break;
-		case 'back': console.log(taskListForShow.back);break;
+		case 'back': task_id = taskListForShow.back[index].task_id;break;
 	}
 
+	console.log(task_id)
 	axios.get('/big/task/info?task_id=' + task_id)
 	.then(res => {
 		let temp = res.data.controller_tasks
@@ -574,11 +588,13 @@ const getInsideDetail = (id: string) => {
 const getTask = async () => {
 	axios.get('/big/tasks')
 	.then(res => {
-		console.log(res.data)
 		for(let i=0;i<res.data.length;i++){
 			if(res.data[i].status == 'pending_approval'){
 				taskList.unread.push(res.data[i])
 			}else if(res.data[i].status == 'approved' || res.data[i].status == 'stopped'){
+				//todo 任务状态!
+
+				//************************************************* */
 				taskList.pass.push(res.data[i])
 			}else{
 				taskList.back.push(res.data[i])
@@ -593,6 +609,11 @@ const getTask = async () => {
 		ElMessage.error('获取任务失败！请检查网络连接或稍后重试！')
 		taskLoading.value = false
 	})
+
+}
+
+//任务状态翻译 todo
+const translateStatus = (status: string) => {
 
 }
 
