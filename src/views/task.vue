@@ -1,10 +1,13 @@
 <template>
 	<div class="container">
-		<el-tabs v-model="message" v-loading="taskLoading">
+		<el-tabs v-model="message" 
+		v-loading="taskLoading"
+		:element-loading-text="taskLoadingText">
 			<el-tab-pane :label="`待审批任务(${taskList.unread.length})`" name="first">
 				<el-table :data="taskListForShow.unread" style="width: 100%" border>
 					<el-table-column prop="task_id" label="编号" width="180"></el-table-column>
 					<el-table-column prop="topic" label="主题"></el-table-column>
+					<el-table-column prop="created_at" label="创建时间"></el-table-column>
 					<el-table-column width="275px" label="操作">
 						<template #default="scope">
 							<div class="opreation">
@@ -32,6 +35,7 @@
 					<el-table :data="taskListForShow.pass" style="width: 100%" border>
 						<el-table-column prop="task_id" label="编号" width="180"></el-table-column>
 						<el-table-column prop="topic" label="主题"></el-table-column>
+						<el-table-column prop="created_at" label="创建时间"></el-table-column>
 						<el-table-column prop="status" label="任务状态" width="180"></el-table-column>
 						<el-table-column width="275px" label="操作">
 							<template #default="scope">
@@ -57,6 +61,7 @@
 					<el-table :data="taskListForShow.back" style="width: 100%" border>
 						<el-table-column prop="task_id" label="编号" width="180"></el-table-column>
 						<el-table-column prop="topic" label="主题"></el-table-column>
+						<el-table-column prop="created_at" label="创建时间"></el-table-column>
 						<el-table-column width="200" label="操作">
 							<template #default="scope">
 								<div class="opreation">
@@ -102,8 +107,7 @@
 			v-model="infoDialog" 
 			width="90%" 
 			:modal="false" 
-			:draggable="true"
-			v-loading="taskDetailLoading">
+			:draggable="true">
 			<div class="selectContainer">
 				<el-space :spacer="spacer">
 					<span>筛选条件</span>
@@ -119,7 +123,9 @@
 					<el-button @click="check">筛选</el-button>
 				</el-space>
 			</div>
-				<el-tabs v-model="page">
+				<el-tabs 
+				v-model="page"
+				v-loading="taskDetailLoading">
 					<el-tab-pane :label="`已完成(${taskStatus.finish})`" name="first">
 						<el-table :data="reflashDataForShow.finish" border class="table" style="width: 100%" >
 							<el-table-column prop="pallet_number" label="托号"></el-table-column>
@@ -247,7 +253,7 @@
 					<el-table-column prop="module_number" label="模组编号"></el-table-column>
 					<el-table-column prop="product_number" label="产品编号"></el-table-column>
 					<el-table-column prop="status" label="状态"></el-table-column>
-					<el-table-column prop="suite_number" label="托号"></el-table-column>
+					<el-table-column prop="pallet_number" label="托号"></el-table-column>
 					<el-table-column prop="trace_code" label="回退码"></el-table-column>
 					<el-table-column prop="update_time" label="更新时间"></el-table-column>
 					<el-table-column label='版本信息'>
@@ -284,7 +290,8 @@
 
 <script setup lang="ts" name="tabs">
 import { ref, reactive, h,  onBeforeMount } from 'vue';
-import { ElDivider, ElMessage, ElNotification } from 'element-plus';
+import { ElDivider, ElMessage, ElNotification} from 'element-plus';
+import { format } from 'date-fns'
 import axios from 'axios';
 
 const message = ref('first');
@@ -498,6 +505,9 @@ const passToStop = (index: number) => {
 var tempId	//用于暂时存储任务id便于导出日志的命名
 //导出任务数据
 const exportTask = (index: number) => {
+	taskLoadingText.value = '日志导出中请稍后......'
+	taskLoading.value = true
+	
 	tempId = taskListForShow.pass[index].task_id
     axios({
         url: `/big/task/report?task_id=${tempId}`,
@@ -507,14 +517,15 @@ const exportTask = (index: number) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `${tempId}.xlsx`); // 假设下载的是PDF文件，可以根据实际情况更改文件名和扩展名
+        link.setAttribute('download', `${tempId}.xlsx`); // 下载的是xlsx文件
         document.body.appendChild(link);
         link.click();
         link.remove();  // 清理DOM
         window.URL.revokeObjectURL(url); // 释放Blob URL
+		taskLoading.value = false
         ElNotification.success('导出成功！');
     }).catch((error) => {
-        console.error('Export failed:', error);
+		taskLoading.value = false
         ElNotification.error('导出失败！请检查网络连接或稍后再试');
     });
 }
@@ -543,7 +554,6 @@ const getTaskDetail = (index: number, type: string) => {
 	axios.get('/big/task/info?task_id=' + task_id)
 	.then(res => {
 		let temp = res.data.controller_tasks
-
 		for(let i=0;i<temp.length;i++){
 			if(temp[i].status == 'error'){
 				//刷新失败的小任务
@@ -578,7 +588,7 @@ const getTaskDetail = (index: number, type: string) => {
 
 //获取任务更加详情信息
 var insideInfoDialog = ref(false)
-var taskInsideDetailLoading = ref(true)
+const taskInsideDetailLoading = ref(true)
 const getInsideDetail = (id: string) => {
 	taskInsideDetailLoading.value = true	//开启加载页面
 	//重置小任务详情，防止重复
@@ -597,17 +607,23 @@ const getInsideDetail = (id: string) => {
 	})
 }
 
+const taskLoadingText = ref()
 //获取任务列表
 const getTask = async () => {
+	taskLoadingText.value = '任务获取中请稍后......'
 	axios.get('/big/tasks')
 	.then(res => {
 		for(let i=0;i<res.data.length;i++){
+			res.data[i].created_at = format(new Date(res.data[i].created_at), 'yyyy-MM-dd HH:mm:ss')
 			if(res.data[i].status == 'pending_approval'){
 				taskList.unread.push(res.data[i])
-			}else if(res.data[i].status == 'approved' || res.data[i].status == 'stopped'){
-				//todo 任务状态!
-
-				//************************************************* */
+			}else if(res.data[i].status == 'approved'){
+				//任务状态翻译
+				res.data[i].status = '已分配'
+				taskList.pass.push(res.data[i])
+			}else if(res.data[i].status == 'stopped'){
+				//任务状态翻译
+				res.data[i].status = '已停止'
 				taskList.pass.push(res.data[i])
 			}else{
 				taskList.back.push(res.data[i])
@@ -622,11 +638,6 @@ const getTask = async () => {
 		ElMessage.error('获取任务失败！请检查网络连接或稍后重试！')
 		taskLoading.value = false
 	})
-
-}
-
-//任务状态翻译 todo
-const translateStatus = (status: string) => {
 
 }
 

@@ -6,8 +6,9 @@
 			<el-icon v-else><Fold /></el-icon>
 		</div>
 		<div class="logo">
-			<el-avatar shape="square" :size="100" fit="cover" :src="url1" class="pic"/>
-			<el-avatar shape="square" :size="100" fit="cover" :src="url2" class="pic"/>
+			<el-avatar shape="square" :size="80" fit="cover" :src="url1" class="pic"/>
+			<el-divider direction="vertical" class="el-divider" style=""/>
+			<el-avatar shape="square" :size="80" fit="cover" :src="url2" class="pic"/>
 		</div>
 		<div class="header-right">电池刷新管理系统</div>
 	</div>
@@ -18,7 +19,7 @@ import { useSidebarStore } from '../store/sidebar';
 import { useRouter } from 'vue-router';
 import imgurl from '../assets/img/img.jpg';
 import pic1 from '../assets/img/img.png'
-import pic2 from '../assets/img/img.jpg'
+import pic2 from '../assets/img/img1.jpg'
 
 const username: string | null = localStorage.getItem('ms_username');
 const message: number = 2;
@@ -56,7 +57,7 @@ const handleCommand = (command: string) => {
 	width: 100%;
 	height: 70px;
 	font-size: 22px;
-	color: #fff;
+	background-color: #C0C4CC;
 }
 .collapse-btn {
 	display: flex;
@@ -66,11 +67,13 @@ const handleCommand = (command: string) => {
 	float: left;
 	padding: 0 21px;
 	cursor: pointer;
+	color: black
 }
 .header .logo {
 	float: left;
 	width: 250px;
 	line-height: 70px;
+	display: flex;
 }
 .header-right {
 	display: flex;
@@ -84,5 +87,11 @@ const handleCommand = (command: string) => {
 .pic{
 	margin-left: 5px;
 	margin-right: 5px;
+	margin-top: 8px;
+}
+.el-divider{
+	border-color: black; 
+	height: 60px; 
+	margin-top: 5px;
 }
 </style>

@@ -40,7 +40,7 @@
             :key="index">
                 <el-upload
                 :limit="1"
-                :file-list="upload_file"
+                :file-list="info.fileList"
                 action="http://122.51.105.149:5000/file/input"
                 :data="{ file_type: info.type }"
                 :on-error="handleUploadError"
@@ -57,41 +57,6 @@
                     <div class="el-upload__text">拖拽文件至此或<em>点击上传</em></div>
                 </el-upload>
             </div>
-            <!--
-            <div>
-                <el-text>BRFM FPA文件上传</el-text>
-                <el-upload
-                :limit="1"
-                :on-change="handle"
-                :http-request="upload"
-                :on-exceed="handleExceed"
-                :show-file-list="true">
-                <el-button type="primary" icon="upload" plains @click="getType('BRFM FPA')">上传文件</el-button>
-                </el-upload>
-            </div>
-            <div>
-                <el-text>CMU OPFW文件上传</el-text>
-                <el-upload
-                :limit="1"
-                :on-change="handle"
-                :http-request="upload"
-                :on-exceed="handleExceed"
-                :show-file-list="true">
-                <el-button type="primary" icon="upload" plains @click="getType('CMU OPFW')">上传文件</el-button>
-                </el-upload>
-            </div>
-            <div>
-                <el-text>BRFM OPFW文件上传</el-text>
-                <el-upload
-                :limit="1"
-                :on-change="handle"
-                :http-request="upload"
-                :on-exceed="handleExceed"
-                :show-file-list="true">
-                <el-button type="primary" icon="upload" plains @click="getType('BRFM OPFW')">上传文件</el-button>
-                </el-upload>
-            </div>
-            -->
         </div>
         <div class="uploadContainer">
             <div 
@@ -99,7 +64,7 @@
             :key="index">
                 <el-upload
                 :limit="1"
-                :file-list="upload_file"
+                :file-list="info.fileList"
                 action="http://122.51.105.149:5000/file/input"
                 :data="{ file_type: info.type }"
                 :on-error="handleUploadError"
@@ -124,52 +89,6 @@
                     <div class="el-upload__text">拖拽文件至此或<em>点击上传</em></div>
                 </el-upload>
             </div>
-            <!--
-            <div class="uploadBtnContainer">
-                <el-text class="el-text">BMS Container文件上传</el-text>
-                <el-upload
-                :limit="1"
-                :on-change="handle"
-                :http-request="upload"
-                :on-exceed="handleExceed"
-                :show-file-list="true">
-                <el-button type="primary" icon="upload" plains @click="getType('BMS Container')">上传文件</el-button>
-                </el-upload>
-            </div>
-            <div>
-                <el-text>PMS Container文件上传</el-text>
-                <el-upload
-                :limit="1"
-                :on-change="handle"
-                :http-request="upload"
-                :on-exceed="handleExceed"
-                :show-file-list="true">
-                <el-button type="primary" icon="upload" plains @click="getType('PMS Container')">上传文件</el-button>
-                </el-upload>
-            </div>
-            <div>
-                <el-text>EMS Container文件上传</el-text>
-                <el-upload
-                :limit="1"
-                :on-change="handle"
-                :http-request="upload"
-                :on-exceed="handleExceed"
-                :show-file-list="true">
-                <el-button type="primary" icon="upload" plains @click="getType('EMS Container')">上传文件</el-button>
-                </el-upload>
-            </div>
-            <div style="visibility: hidden">
-                <el-text>EMS Container文件上传--占位控件--</el-text>
-                <el-upload
-                :limit="1"
-                :on-change="handle"
-                :http-request="upload"
-                :on-exceed="handleExceed"
-                :show-file-list="true">
-                <el-button type="primary" icon="upload" plains @click="getType('EMS Container')">上传文件</el-button>
-                </el-upload>
-            </div>
-            -->
         </div>
 
 
@@ -214,18 +133,22 @@ const uploadInfo1 = ref([
     {
         title: 'CMU FPA文件上传',
         type: 'CMU_FPA',
+        fileList: [],
     },
     {
         title: 'BRFM FPA文件上传',
         type: 'BRFM_FPA',
+        fileList: [],
     },
     {
         title: 'CMU OPFW文件上传',
         type: 'CMU_OPFW',
+        fileList: [],
     },
     {
         title: 'BRFM OPFW文件上传',
-        type: 'BRFM_OPFW'
+        type: 'BRFM_OPFW',
+        fileList: [],
     },
 
 ])
@@ -234,14 +157,17 @@ const uploadInfo2 = ref([
     {
         title: 'BMS Container文件上传',
         type: 'BMS_CN',
+        fileList: [],
     },
     {
         title: 'PMS Container文件上传',
         type: 'PMS_CN',
+        fileList: [],
     },
     {
         title: 'EMS Container文件上传',
         type: 'EMS_CN',
+        fileList: [],
     }
 ])
 
@@ -289,16 +215,30 @@ var title = ref()
 const CRCCode = ref()
 const version = ref()
 const createTask = () => {
+    let tempCRC = CRCCode.value
+    let tempVersion = version.value
+    //crc无输入
     if(CRCCode.value == null || CRCCode.value == '' || CRCCode.value == undefined){
-        ElMessage.error('请输入CRC码')
-    }else if(version.value == null || version.value == '' || version.value == undefined){
-        ElMessage.error('请输入版本')
-    }else if(title.value != (null || '' || undefined) && upload_file != null){
+        tempCRC = ' '
+    }
+
+    //版本无输入
+    if(version.value == null || version.value == '' || version.value == undefined){
+        tempVersion = ''
+    }
+    
+    if(title.value == null || title.value == '' || title.value == undefined){
+        //主题无输入
+        ElMessage.error('请输入主题')
+    }else if(upload_file == null){
+        //刷新包文件未上传
+        ElMessage.error('请先上传刷新包文件')
+    }else {
         //创建任务 数据库同步信息
         createTaskLoading.value = true
         axios.put('/big/task/create?topic=' + title.value + 
-                    '&targetcrc=' + CRCCode.value + 
-                    '&targetversion=' + version.value)
+                    '&targetcrc=' + tempCRC + 
+                    '&targetversion=' + tempVersion)
         .then(res => {
             ElMessage.success('任务创建成功')
             createTaskLoading.value = false
@@ -308,12 +248,6 @@ const createTask = () => {
             ElMessage.error('任务创建失败，请稍后再试')
             createTaskLoading.value = false
         })
-    }else{
-        if(upload_file != null){
-            ElMessage.error('请输入主题')
-        }else{
-            ElMessage.error('请先上传刷新包文件')
-        }
     }
 }
 
@@ -323,6 +257,12 @@ const initPage = () => {
     CRCCode.value = ''
     version.value = ''
     upload_file.value = null
+    for(let i=0;i<uploadInfo1.value.length;i++){
+        uploadInfo1.value[i].fileList = []
+    }
+    for(let i=0;i<uploadInfo2.value.length;i++){
+        uploadInfo1.value[i].fileList = []
+    }
     sessionStorage.setItem('refresh', 'true')
     forward()
 }

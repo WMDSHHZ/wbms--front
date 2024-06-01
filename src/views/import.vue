@@ -4,7 +4,7 @@
             <div class="handle-box">
                 <el-upload
                     action="#"
-                    accept=".xlsx, .xls, .csv"
+                    accept=".csv"
                     :show-file-list="false"
                     :before-upload="beforeUpload"
                     :http-request="handleMany"
@@ -50,8 +50,8 @@ const importLoading = ref(false)
 var count=0 //用于标识上传文件数，手动控制文件数限制为1
 var importList = ref<any>([]);
 const beforeUpload: UploadProps['beforeUpload'] = async (rawFile) => {
-    if(count==0){
-        count++
+    if(count<=0){
+        count=1
         importLoading.value = true
         let param = new FormData();
         param.append("file",rawFile)
@@ -124,7 +124,7 @@ const handleMany = async () => {
 const deleteData = () => {
     tableData.value = []
     showLengthinfoFlag.value = false
-    count--
+    count=0
 }
 
 const router = useRouter();
@@ -142,17 +142,17 @@ const next = () => {
 }
 
 const key = ref(0)
-
-// 使onMounted来响应参数变化
-onMounted(() => {
+router.beforeEach((to, from, next) => {
     key.value = inject('count', 0)
     console.log(key.value)
     let refresh = sessionStorage.getItem('refresh')
     console.log(refresh)
     if (refresh == 'true') {
         //清空数据
+        sessionStorage.setItem('refresh', 'false')
         deleteData()
     }
+    next();
 });
 
 </script>
