@@ -6,11 +6,11 @@
 			<el-icon v-else><Fold /></el-icon>
 		</div>
 		<div class="logo">
-			<el-avatar shape="square" :size="80" fit="cover" :src="url1" class="pic"/>
-			<el-divider direction="vertical" class="el-divider" style=""/>
 			<el-avatar shape="square" :size="80" fit="cover" :src="url2" class="pic"/>
+			<el-divider direction="vertical" class="el-divider" style=""/>
+			<el-avatar shape="square" :size="80" fit="cover" :src="url1" class="pic"/>
 		</div>
-		<div class="header-right">电池刷新管理系统</div>
+		<div class="header-right">电池软件升级运维系统</div>
 	</div>
 </template>
 <script setup lang="ts">

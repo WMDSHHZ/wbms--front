@@ -15,13 +15,13 @@
                     class="mr10" 
                     type="success">批量导入</el-button>
                 </el-upload>
-                <el-link href="/template.xlsx" target="_blank" class="link">下载模板</el-link>
+                <el-link href="/template.csv" target="_blank" class="link">下载模板</el-link>
                 <el-button type="danger" @click="deleteData">清空数据</el-button>
                 <el-button @click="next">下一步</el-button>
             </div>
             <el-table :data="tableData" border class="table" header-cell-class-name="table-header" show-overflow-tooltip="true">
                 <el-table-column prop="number" label="托号" align="center"></el-table-column>
-                <el-table-column prop="MAC" label="MAC地址"></el-table-column>
+                <el-table-column prop="mac_address" label="MAC地址"></el-table-column>
             </el-table>
             <div v-if="showLengthinfoFlag">
                 一共有{{ length }}条数据，已展示{{ showLength }}条数据
@@ -98,7 +98,7 @@ const handleMany = async () => {
     const list = importList.value.map((item: any, index: number) => {
         return {
             number: item['pallet_number'],
-            MAC: item['MAC'],
+            mac_address: item['mac_address'],
             PN: item['PN'],
             "模组号": item['module'],
             traceCode: item['Trace code']
@@ -144,9 +144,7 @@ const next = () => {
 const key = ref(0)
 router.beforeEach((to, from, next) => {
     key.value = inject('count', 0)
-    console.log(key.value)
     let refresh = sessionStorage.getItem('refresh')
-    console.log(refresh)
     if (refresh == 'true') {
         //清空数据
         sessionStorage.setItem('refresh', 'false')

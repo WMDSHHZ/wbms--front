@@ -97,7 +97,6 @@ export const usePermissStore = defineStore('permiss', {
 				temp.push('6')
 			}
 			permiss.defaultList.super_admin = temp
-			console.log(permiss.defaultList.super_admin)
 		})
 		.catch(error => {
 			ElMessage.error('获取超级管理员权限信息失败，将使用默认权限信息')

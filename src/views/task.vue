@@ -97,8 +97,10 @@
 						{{ device.name }}
 					</el-checkbox>
 				</el-checkbox-group>
-				<el-button type="success" plain @click="allocateTaskDialog = false;selected = true" size="small">确定</el-button>
-				<el-button type="danger" plain @click="allocateTaskDialog = false;selected = false" size="small">取消</el-button>
+				<div style="display: flex; justify-content: space-around; margin-top: 15px;">
+					<el-button type="success" plain @click="allocateTaskDialog = false;selected = true" size="small">确定</el-button>
+					<el-button type="danger" plain @click="allocateTaskDialog = false;selected = false" size="small">取消</el-button>
+				</div>
 			</el-dialog>
 		</div>
 
@@ -119,7 +121,7 @@
 						end-placeholder="结束日期"
 						value-format="YYYY-MM-DD"
 					/>
-					<el-input placeholder="MAC地址" v-model="macValue"></el-input>
+					<el-input placeholder="托号" v-model="macValue"></el-input>
 					<el-button @click="check">筛选</el-button>
 				</el-space>
 			</div>
@@ -407,6 +409,7 @@ const handleAllocatedChange = () => {
 			axios.post('/big/task/update_status', statusChangeParam)
 			.then(res => {
 				let index	//找到被选中任务的位置
+				item.status = '已分配'	//前端修改状态，不用发请求重新获取因为状态在数据库已被修改
 				if(assignFrom == 'unread'){
 					index = taskList.unread.indexOf(item)	
 					if (index !== -1) {
@@ -657,10 +660,10 @@ var reflashDataForSelected = reactive({
 })
 const check = () => {
 	//筛选条件为空，则展示所有信息(Show数组信息从原始数组中获得)
-	if(dateValue.value.length !== 0 || macValue.value !== ''){
+	if(dateValue.value !== undefined || macValue.value !== ''){
 		for(let t=0;t<3;t++){
-			var showDataList = []
-			var dataList = []
+			let showDataList = []
+			let dataList = []
 			switch(t)
 			{
 				case 0: dataList = reflashData.finish;break;
@@ -670,22 +673,22 @@ const check = () => {
 			
 			for(let i=0;i<dataList.length;i++){
 				//如果时间选项不存在
-				if(dateValue.value.length == 0){	
-					if(dataList[i].mac_address == macValue.value){
+				if(dateValue.value == undefined || dateValue.value.length == 0){	
+					if(dataList[i].pallet_number == macValue.value){
 						showDataList.push(dataList[i])
 					}
 				}else{		
 					//如果时间选项存在
 					//先判断mac地址是否为空
-					if(macValue.value == ''){
+					if(macValue.value == '' || macValue.value == undefined){
 						//若mac地址为空则根据时间筛选
-						if(dataList[i].update_time.slice(0,10) >= dateValue.value[0] && dataList[i].update_time.slice(0,10) <= dateValue.value[1]){
+						if(dataList[i].scan_time.slice(0,10) >= dateValue.value[0] && dataList[i].scan_time.slice(0,10) <= dateValue.value[1]){
 							showDataList.push(dataList[i])
 						}
 					}else{
 						//否则根据两者筛选
-						if(dataList[i].update_time.slice(0,10) >= dateValue.value[0] && dataList[i].update_time.slice(0,10) <= dateValue.value[1] &&
-							dataList[i].mac_address == macValue.value){
+						if(dataList[i].scan_time.slice(0,10) >= dateValue.value[0] && dataList[i].scan_time.slice(0,10) <= dateValue.value[1] &&
+							dataList[i].pallet_number == macValue.value){
 							showDataList.push(dataList[i])
 						}
 					}
@@ -700,16 +703,6 @@ const check = () => {
 			}
 		}
 
-		taskStatus.finish = reflashDataForSelected.finish.length
-		taskStatus.working = reflashDataForSelected.working.length
-		taskStatus.failed = reflashDataForSelected.failed.length
-
-		console.log(reflashDataForSelected.working)
-	}else{
-		taskStatus.finish = reflashData.finish.length
-		taskStatus.working = reflashData.working.length
-		taskStatus.failed = reflashData.failed.length
-		console.log("111")
 	}
 
 	detailCurrentPage.finish = 1
@@ -785,13 +778,19 @@ const handleDetailCurrentChange = (type: string) => {
 		working:[],
 		failed:[]
 	}
-	if(dateValue.value.length == 0 && (macValue.value == '' || macValue.value == undefined)){
+	if((dateValue.value == undefined || dateValue.value.length == 0) && 
+	(macValue.value == '' || macValue.value == undefined)){
 		//没有筛选信息，show数组信息应从原始数组中获取
 		tempList = reflashData
 	}else{
 		//有筛选信息，show数组信息应从select数组中获取
 		tempList = reflashDataForSelected
 	}
+
+	taskStatus.finish = tempList.finish.length
+	taskStatus.working = tempList.working.length
+	taskStatus.failed = tempList.failed.length
+
 	switch(type){
 		case 'finish' :
 			reflashDataForShow.finish = []

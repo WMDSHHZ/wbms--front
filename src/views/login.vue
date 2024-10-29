@@ -1,7 +1,7 @@
 <template>
     <div class="login-wrap">
         <div class="ms-login">
-            <div class="ms-title">电池刷新管理系统</div>
+            <div class="ms-title">电池软件升级运维系统</div>
             <el-form :model="param" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
                     <el-input 
@@ -82,37 +82,42 @@ const permiss = usePermissStore();
 const login = ref<FormInstance>();
 
 const count = ref(0)
+var keys = permiss.defaultList['operator']
 //登录校验
 const submitForm = (formEl: FormInstance | undefined) => {
     loading.value = true    //显示等待加载组件
-    if (!formEl) return;    //如果表单类型为undefined则返回
+    if (!formEl){
+        loading.value = false
+        return;    //如果表单类型为undefined则返回
+    } 
     formEl.validate((valid: boolean) => {
         if (valid) {
             let user = {
                 "username": param.username,
                 "password": param.password
-            }
-            
+            }  
+            console.log('user--',user)   
             axios.post('/user/checkPassword', user)
             .then(res => {
                 ElMessage.success('登录成功');
                 sessionStorage.setItem('ms_username', param.username);    //用于路由守卫
                 //暂存用户信息
                 sessionStorage.setItem('username', param.username)
+                ElMessage.info('权限认证中...当前权限为普通用户')
                 //权限认证##################################################
                 axios.get('/user/role?username=' + param.username)
                 .then(res => {
                     let role = res.data.userRole.role == 'admin' ? 'admin' : 
                                res.data.userRole.role == 'operator' ? 'operator' : 'super_admin'
                     sessionStorage.setItem('role', role)
-                    const keys = permiss.defaultList[role];
+                    keys = permiss.defaultList[role];
                     permiss.handleSet(keys);
                     localStorage.setItem('ms_keys', JSON.stringify(keys))
+                    ElMessage.success('权限认证成功!')
                 })
                 .catch(error => {
-                    console.log(error)
                     ElMessage.warning('验证失败,请检查网络连接,当前权限默认为普通用户')
-                    const keys = permiss.defaultList['operator']
+                    keys = permiss.defaultList['operator']
                     permiss.handleSet(keys);
                     localStorage.setItem('ms_keys', JSON.stringify(keys))
                 })
